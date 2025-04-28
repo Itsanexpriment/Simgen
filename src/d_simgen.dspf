@@ -1,0 +1,791 @@
+     A* Copyright (c) 2025 Paul Gougassian
+     A*
+     A* Permission is hereby granted, free of charge, to any person obtaining
+     A* a copy of this software and associated documentation files
+     A* (the "Software"), to deal in the Software without restriction, including
+     A* without limitation the rights to use, copy, modify, merge, publish,
+     A* distribute, sublicense, and/or sell copies of the Software, and to
+     A* permit persons to whom the Software is furnished to do so, subject to
+     A* the following conditions:
+     A*
+     A* The above copyright notice and this permission notice shall be included
+     A* in all copies or substantial portions of the Software.
+     A*
+     A* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+     A* OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+     A* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+     A* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+     A* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+     A* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+     A* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+     A*
+     A                                      DSPSIZ(27 132 *DS4)
+     A                                      INDARA
+     A N84                                  CF02(02 'SAVE')
+     A                                      CA03(03 'EXIT')
+     A N84                                  CF06(06 'EXEC')
+     A  84                                  CA08(08 'RESTORE')
+     A  81
+     AO 82
+     AO 83
+     AO 84
+     AO 85                                  CA12(12 'CANCEL')
+     A                                      PAGEDOWN
+     A                                      PAGEUP
+     A          R TITLE
+     A                                      OVERLAY
+     A                                  1 56'SimGen Tm§'
+     A                                      COLOR(WHT)
+     A                                      DSPATR(RI)
+     A          R MAINSFL                   SFL
+     A            OP             1A  B  7  2
+     A  71                                  DSPATR(RI)
+     A            VARNAME       15A  O  7  6
+     A            TLEN           9A  O  7 23
+     A            MAXDIM         4A  O  7 34
+     A***         hidden fields
+     A            PRMID          5S 0H
+     A            PRMDLEN        3S 0H
+     A            PRMOGTYP      10A  H
+     A            PRMOGLEN       5S 0H
+     A            PRMOGPRC       2S 0H
+     A            PRMARRID       5S 0H
+     A            PRMARRDIM      4S 0H
+     A  51 52 53  FLDA001        1A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 52 54  FLDA002        2A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 52 55  FLDA003        3A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 52 56  FLDA004        4A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 52 57  FLDA005        5A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 52 58  FLDA006        6A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 52 59  FLDA007        7A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 52 60  FLDA008        8A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 53 54  FLDA009        9A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 53 55  FLDA010       10A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 53 56  FLDA011       11A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 53 57  FLDA012       12A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 53 58  FLDA013       13A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 53 59  FLDA014       14A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 53 60  FLDA015       15A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 54 55  FLDA016       16A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 54 56  FLDA017       17A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 54 57  FLDA018       18A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 54 58  FLDA019       19A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 54 59  FLDA020       20A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 54 60  FLDA021       21A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 55 56  FLDA022       22A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 55 57  FLDA023       23A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 55 58  FLDA024       24A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 55 59  FLDA025       25A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 55 60  FLDA026       26A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 56 57  FLDA027       27A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 56 58  FLDA028       28A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 56 59  FLDA029       29A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 56 60  FLDA030       30A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 57 58  FLDA031       31A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 57 59  FLDA032       32A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 57 60  FLDA033       33A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 58 59  FLDA034       34A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 58 60  FLDA035       35A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 59 60  FLDA036       36A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 53 54  FLDA037       37A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 53 55  FLDA038       38A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 53 56  FLDA039       39A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 53 57  FLDA040       40A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 53 58  FLDA041       41A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 53 59  FLDA042       42A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 53 60  FLDA043       43A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 54 55  FLDA044       44A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 54 56  FLDA045       45A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 54 57  FLDA046       46A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 54 58  FLDA047       47A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 54 59  FLDA048       48A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 54 60  FLDA049       49A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 55 56  FLDA050       50A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 55 57  FLDA051       51A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 55 58  FLDA052       52A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 55 59  FLDA053       53A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 55 60  FLDA054       54A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 56 57  FLDA055       55A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 56 58  FLDA056       56A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 56 59  FLDA057       57A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 56 60  FLDA058       58A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 57 58  FLDA059       59A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 57 59  FLDA060       60A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 57 60  FLDA061       61A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 58 59  FLDA062       62A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 58 60  FLDA063       63A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 59 60  FLDA064       64A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 54 55  FLDA065       65A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 54 56  FLDA066       66A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 54 57  FLDA067       67A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 54 58  FLDA068       68A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 54 59  FLDA069       69A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 54 60  FLDA070       70A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 55 56  FLDA071       71A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 55 57  FLDA072       72A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 55 58  FLDA073       73A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 55 59  FLDA074       74A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 55 60  FLDA075       75A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 56 57  FLDA076       76A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 56 58  FLDA077       77A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 56 59  FLDA078       78A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 56 60  FLDA079       79A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 57 58  FLDA080       80A  B  7 41
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A          R MAINCTRL                  SFLCTL(MAINSFL)
+     A                                      SFLSIZ(0015)
+     A                                      SFLPAG(0015)
+     A                                      OVERLAY
+     A  31                                  SFLDSP
+     A  32                                  SFLDSPCTL
+     A N31                                  SFLCLR
+     A N33                                  SFLEND(*MORE)
+     A                                  5  2'OP'
+     A                                  6  2'-----------------------------------
+     A                                      ---------------------------'
+     A                                  5  6'Variable Name'
+     A                                  5 23'Type(Len)'
+     A                                  5 41'Value'
+     A                                  4 34'Array'
+     A                                  5 34'Dim'
+     A                                  3  2'1=Work with subfields(DS)'
+     A                                      COLOR(BLU)
+     A                                  3 29'2=Work with elements(Array)'
+     A                                      COLOR(BLU)
+     A                                  2  2'Viewing:'
+     A                                      DSPATR(HI)
+     A            DSVIEWMD      40A  O  2 11
+     A          R FUNCK
+     A                                      OVERLAY
+     A                                 24  2'-----------------------------------
+     A                                      ------------------------------------
+     A                                      ----------'
+     A                                      COLOR(BLU)
+     A N84                             25  2'F3=Exit   F2=Save Values   F6=Call-
+     A                                       Program'
+     A                                      COLOR(BLU)
+     A  84                             25  2'F3=Exit   F8=Restore Values'
+     A                                      COLOR(BLU)
+     A          R ARRSFL                    SFL
+     A            DSARRIDX       4Y 0O  6  5EDTCDE(Z)
+     A            DSPRMID        5S 0H
+     A            DSPRMDLEN      3S 0H
+     A  51 52 53  FLDB001        1A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 52 54  FLDB002        2A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 52 55  FLDB003        3A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 52 56  FLDB004        4A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 52 57  FLDB005        5A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 52 58  FLDB006        6A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 52 59  FLDB007        7A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 52 60  FLDB008        8A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 53 54  FLDB009        9A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 53 55  FLDB010       10A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 53 56  FLDB011       11A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 53 57  FLDB012       12A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 53 58  FLDB013       13A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 53 59  FLDB014       14A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 53 60  FLDB015       15A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 54 55  FLDB016       16A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 54 56  FLDB017       17A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 54 57  FLDB018       18A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 54 58  FLDB019       19A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 54 59  FLDB020       20A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 54 60  FLDB021       21A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 55 56  FLDB022       22A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 55 57  FLDB023       23A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 55 58  FLDB024       24A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 55 59  FLDB025       25A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 55 60  FLDB026       26A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 56 57  FLDB027       27A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 56 58  FLDB028       28A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 56 59  FLDB029       29A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 56 60  FLDB030       30A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 57 58  FLDB031       31A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 57 59  FLDB032       32A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 57 60  FLDB033       33A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 58 59  FLDB034       34A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 58 60  FLDB035       35A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  51 59 60  FLDB036       36A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 53 54  FLDB037       37A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 53 55  FLDB038       38A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 53 56  FLDB039       39A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 53 57  FLDB040       40A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 53 58  FLDB041       41A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 53 59  FLDB042       42A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 53 60  FLDB043       43A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 54 55  FLDB044       44A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 54 56  FLDB045       45A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 54 57  FLDB046       46A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 54 58  FLDB047       47A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 54 59  FLDB048       48A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 54 60  FLDB049       49A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 55 56  FLDB050       50A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 55 57  FLDB051       51A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 55 58  FLDB052       52A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 55 59  FLDB053       53A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 55 60  FLDB054       54A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 56 57  FLDB055       55A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 56 58  FLDB056       56A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 56 59  FLDB057       57A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 56 60  FLDB058       58A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 57 58  FLDB059       59A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 57 59  FLDB060       60A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 57 60  FLDB061       61A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 58 59  FLDB062       62A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 58 60  FLDB063       63A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  52 59 60  FLDB064       64A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 54 55  FLDB065       65A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 54 56  FLDB066       66A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 54 57  FLDB067       67A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 54 58  FLDB068       68A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 54 59  FLDB069       69A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 54 60  FLDB070       70A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 55 56  FLDB071       71A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 55 57  FLDB072       72A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 55 58  FLDB073       73A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 55 59  FLDB074       74A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 55 60  FLDB075       75A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 56 57  FLDB076       76A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 56 58  FLDB077       77A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 56 59  FLDB078       78A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 56 60  FLDB079       79A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A  53 57 58  FLDB080       80A  B  6 12
+     A  72                                  DSPATR(RI)
+     A  84                                  DSPATR(PR)
+     A N84                                  DSPATR(UL)
+     A          R ARRCTRL                   SFLCTL(ARRSFL)
+     A                                      SFLSIZ(0010)
+     A                                      SFLPAG(0010)
+     A                                      WINDOW(ARRWDW)
+     A                                      OVERLAY
+     A  36                                  SFLDSP
+     A  37                                  SFLDSPCTL
+     A N37                                  SFLCLR
+     A N38                                  SFLEND(*MORE)
+     A                                  1 39'Array Elements'
+     A                                      COLOR(WHT)
+     A                                      DSPATR(RI)
+     A                                  4  5'Index'
+     A                                  2  5'Array Name:'
+     A                                      DSPATR(UL)
+     A                                  2 34'Type:'
+     A                                      DSPATR(UL)
+     A                                  2 49'Length:'
+     A                                      DSPATR(UL)
+     A            DSARRNAM      15A  O  2 17
+     A            DSARRTYP       7A  O  2 40
+     A                                  4 12'Value'
+     A                                  5  5'-----------------------------------
+     A                                      ------------------------------------
+     A                                      ----------'
+     A            DSARRLEN       5  0O  2 57
+     A                                  2 63'Precision:'
+     A                                      DSPATR(UL)
+     A            DSDECIMAL      2S 0O  2 74
+     A            DSPRMOGTYP    10A  H
+     A            DSPRMOGLEN     5S 0H
+     A            DSPRMOGPRC     2S 0H
+     A          R ARRWDW
+     A                                      WINDOW(3 17 20 92)
+     A  73        WDWERRMSG     30A  O 18  5DSPATR(RI)
+     A                                      COLOR(RED)
+     A                                 19  5'F2=Save Values   F12=Cancel'
+     A                                      COLOR(BLU)
+     A          R MSGBOX
+     A                                      OVERLAY
+     A  70        DSERRMSG      30   O 23 16DSPATR(RI)
+     A                                      COLOR(RED)
+     A  84                             23 16'Viewing post call parameters, Pres-
+     A                                      s F8 to restore original values'
+     A                                      DSPATR(RI)
+     A          R ELEMWDW
+     A                                      WINDOW(5 46 10 30)
+     A                                  2  5'Choose element to view'
+     A            SLCTELEM       4Y 0B  4 10EDTCDE(Z)
+     A                                  4 15'/'
+     A            SLCMAXELM      4Y 0O  4 17
+     A                                  9  3'Enter=Confirm   F12=Cancel'
+     A                                      COLOR(BLU)
+     A          R CHGWDW
+     A                                      OVERLAY
+     A                                      WINDOW(5 46 8 40)
+     A                                  7  8'Enter=Confirm   F12=Cancel'
+     A                                      COLOR(BLU)
+     A                                  2  4'Press Enter to view the current'
+     A                                  3  4'state of the parameters(post call)'

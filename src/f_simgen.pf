@@ -1,0 +1,36 @@
+     A* Copyright (c) 2025 Paul Gougassian
+     A*
+     A* Permission is hereby granted, free of charge, to any person obtaining
+     A* a copy of this software and associated documentation files
+     A* (the "Software"), to deal in the Software without restriction, including
+     A* without limitation the rights to use, copy, modify, merge, publish,
+     A* distribute, sublicense, and/or sell copies of the Software, and to
+     A* permit persons to whom the Software is furnished to do so, subject to
+     A* the following conditions:
+     A*
+     A* The above copyright notice and this permission notice shall be included
+     A* in all copies or substantial portions of the Software.
+     A*
+     A* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+     A* OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+     A* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+     A* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+     A* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+     A* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+     A* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+     A*
+     A                                      UNIQUE
+     A          R RSIMGEN
+     A            SMID           5S 0
+     A            SIMPNAME      25A
+     A            TYPE          10A
+     A            LENGTH         5S 0
+     A            PRECISION      2S 0
+     A*       Begin array fields
+     A            ARRID          5S 0
+     A            ARRPOS         4S 0
+     A            ARRDIM         4S 0
+     A*       End array fields
+     A            PARENTID       5S 0
+     A            VALUE        100A
+     A          K SMID

@@ -1,0 +1,41 @@
+/* Copyright (c) 2025 Paul Gougassian */
+/*  */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the */
+/* "Software"), to deal in the Software without restriction, including */
+/* without limitation the rights to use, copy, modify, merge, publish, */
+/* distribute, sublicense, and/or sell copies of the Software, and to permit */
+/* persons to whom the Software is furnished to do so, subject to the */
+/* following conditions: */
+/*  */
+/* The above copyright notice and this permission notice shall be included in */
+/* all copies or substantial portions of the Software. */
+/*  */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR */
+/* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, */
+/* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL */
+/* THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER */
+/* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING */
+/* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER */
+/* DEALINGS IN THE SOFTWARE.  */
+
+             PGM
+             CRTPF   FILE(PSIMGEN/F_SIMGEN) SRCFILE(PSIMGEN/SIMGENSRC) +
+               SRCMBR(F_SIMGEN)
+             CRTDSPF FILE(PSIMGEN/D_SIMGEN) SRCFILE(PSIMGEN/SIMGENSRC) +
+               SRCMBR(D_SIMGEN)
+             CRTSQLRPGI OBJ(PSIMGEN/SGMAIN) SRCFILE(PSIMGEN/SIMGENSRC) +
+               SRCMBR(SGMAIN) OBJTYPE(*PGM)
+             CRTSQLRPGI OBJ(PSIMGEN/SGPARSE) SRCFILE(PSIMGEN/SIMGENSRC) +
+               SRCMBR(SGPARSE) OBJTYPE(*PGM)
+             CRTSQLRPGI OBJ(PSIMGEN/SGSCREEN) SRCFILE(PSIMGEN/SIMGENSRC) +
+               SRCMBR(SGSCREEN) OBJTYPE(*PGM)
+             CRTSQLRPGI OBJ(PSIMGEN/SGUTILS) SRCFILE(PSIMGEN/SIMGENSRC) +
+               SRCMBR(SGUTILS) OBJTYPE(*MODULE)
+             CRTSRVPGM SRVPGM(PSIMGEN/SGUTILS) EXPORT(*ALL)
+             CRTSQLRPGI OBJ(PSIMGEN/SGINVOKE) SRCFILE(PSIMGEN/SIMGENSRC) +
+               SRCMBR(SGINVOKE) OBJTYPE(*MODULE)
+             CRTPGM PGM(PSIMGEN/SGINVOKE) BNDSRVPGM((SGUTILS))
+             CRTCMD CMD(PSIMGEN/SIMGEN) PGM(PSIMGEN/SGMAIN) +
+               SRCFILE(PSIMGEN/SIMGENSRC) SRCMBR(SIMGEN)
+             ENDPGM
