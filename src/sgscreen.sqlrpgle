@@ -144,6 +144,7 @@ dcl-c F2 const(x'32');
 dcl-c F3 const(x'33');
 dcl-c F6 const(x'36');
 dcl-c F8 const(x'38');
+dcl-c F10 const(x'3A');
 dcl-c F12 const(x'3C');
 dcl-c Enter const(x'F1');
 dcl-c PageDown const(x'F5');
@@ -217,6 +218,8 @@ dow not Dspf.exit;
       SaveMainSfl();
     when-is F6;
       PerformCall();
+    when-is F10;
+      InitNumericRecursive();
     when-is PageDown;
       ChangePageByDelta(+1);
     when-is PageUp;
@@ -232,6 +235,46 @@ enddo;
 ////////////////////////
 //   Sub-Procedures   //
 ////////////////////////
+
+dcl-proc InitNumericRecursive;
+  dcl-s wrk_id like(CurrPrm.SMID);
+  dcl-s wrk_arrId like(CurrPrm.ARRID);
+
+  exec sql
+    declare c3 cursor for
+    with a1 as
+     (
+       select SMID, PARENTID, ARRID
+       from QTEMP/F_#SIMGEN
+       start with PARENTID = :Ctx.parentId
+       connect by prior SMID = PARENTID
+     )
+    select SMID, ARRID from a1;
+
+  exec sql close c3;
+  exec sql open c3;
+
+  dow 1 = 1;
+    exec sql fetch next from c3 into :wrk_id, :wrk_arrId;
+    if sqlcode <> 0;
+      // TODO - handle error, even though this shouldn't fail
+      return;
+    endif;
+
+    exec sql
+      merge into QTEMP/F_#TMPVAL as target
+      using (values(:wrk_id, '0', :wrk_arrId)) as source (SMID, VALUE, ARRID)
+      on target.SMID = source.SMID
+      when matched and target.VALUE = ' ' then
+        update set target.VALUE = source.VALUE
+      when not matched then
+        insert (SMID, VALUE, ARRID) values(source.SMID, '0', source.ARRID);
+  enddo;
+
+  on-exit;
+    exec sql close c3;
+    g_refreshMain = True;
+end-proc;
 
 dcl-proc PerformCall;
   dcl-s err char(50);

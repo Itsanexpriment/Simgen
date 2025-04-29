@@ -25,6 +25,7 @@
      A                                      CA03(03 'EXIT')
      A N84                                  CF06(06 'EXEC')
      A  84                                  CA08(08 'RESTORE')
+     A N84                                  CA10(10 'INIT NUM')
      A  81
      AO 82
      AO 83
@@ -401,7 +402,7 @@
      A                                      ----------'
      A                                      COLOR(BLU)
      A N84                             25  2'F3=Exit   F2=Save Values   F6=Call-
-     A                                       Program'
+     A                                       Program   F10=Init numeric'
      A                                      COLOR(BLU)
      A  84                             25  2'F3=Exit   F8=Restore Values'
      A                                      COLOR(BLU)
