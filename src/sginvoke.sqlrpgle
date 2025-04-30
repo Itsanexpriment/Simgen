@@ -233,7 +233,7 @@ dcl-proc GetProgramSysPointer;
 
   resolveOpt.objType = OBJ_PGM;
   resolveOpt.objName = %upper(Pgm.name);
-  resolveOpt.auth = x'FF9C'; // maybe too restrictive
+  resolveOpt.auth = x'0000';
 
   monitor;
     if withLib;
@@ -242,8 +242,6 @@ dcl-proc GetProgramSysPointer;
       RSLVSP2(pgmPtr:resolveOpt);
     endif;
   on-error;
-    // if an auth exception occurred, might need to change
-    // variable resolveOpt.auth to be less restrictive
     return 'Error resolving program:' + Pgm.name;
   endmon;
 
