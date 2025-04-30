@@ -19,23 +19,58 @@
 /* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER */
 /* DEALINGS IN THE SOFTWARE.  */
 
-             PGM
-             CRTPF   FILE(PSIMGEN/F_SIMGEN) SRCFILE(PSIMGEN/SIMGENSRC) +
+             PGM        PARM(&I_SRCLIB &I_SRCFILE &I_DSTLIB)
+
+             DCL     VAR(&I_SRCLIB)  TYPE(*CHAR) LEN(10)
+             DCL     VAR(&I_SRCFILE) TYPE(*CHAR) LEN(10)
+             DCL     VAR(&I_DSTLIB)  TYPE(*CHAR) LEN(10)
+
+             /* defaults to PSIMGEN */
+             DCL     VAR(&SRCLIB)  TYPE(*CHAR) LEN(10)
+             /* defaults to SIMGENSRC */
+             DCL     VAR(&SRCFILE) TYPE(*CHAR) LEN(10)
+             /* defaults to source library */
+             DCL     VAR(&DSTLIB)  TYPE(*CHAR) LEN(10)
+
+             /* fill input params with dft values if they were not passed */
+             CALLSUBR SUBR(FMT_INPUT)
+
+             CRTPF   FILE(&DSTLIB/F_SIMGEN) SRCFILE(&SRCLIB/&SRCFILE) +
                SRCMBR(F_SIMGEN)
-             CRTDSPF FILE(PSIMGEN/D_SIMGEN) SRCFILE(PSIMGEN/SIMGENSRC) +
+             CRTDSPF FILE(&DSTLIB/D_SIMGEN) SRCFILE(&SRCLIB/&SRCFILE) +
                SRCMBR(D_SIMGEN)
-             CRTSQLRPGI OBJ(PSIMGEN/SGMAIN) SRCFILE(PSIMGEN/SIMGENSRC) +
+             CRTSQLRPGI OBJ(&DSTLIB/SGMAIN) SRCFILE(&SRCLIB/&SRCFILE) +
                SRCMBR(SGMAIN) OBJTYPE(*PGM)
-             CRTSQLRPGI OBJ(PSIMGEN/SGPARSE) SRCFILE(PSIMGEN/SIMGENSRC) +
+             CRTSQLRPGI OBJ(&DSTLIB/SGPARSE) SRCFILE(&SRCLIB/&SRCFILE) +
                SRCMBR(SGPARSE) OBJTYPE(*PGM)
-             CRTSQLRPGI OBJ(PSIMGEN/SGSCREEN) SRCFILE(PSIMGEN/SIMGENSRC) +
+             CRTSQLRPGI OBJ(&DSTLIB/SGSCREEN) SRCFILE(&SRCLIB/&SRCFILE) +
                SRCMBR(SGSCREEN) OBJTYPE(*PGM)
-             CRTSQLRPGI OBJ(PSIMGEN/SGUTILS) SRCFILE(PSIMGEN/SIMGENSRC) +
+             CRTSQLRPGI OBJ(&DSTLIB/SGUTILS) SRCFILE(&SRCLIB/&SRCFILE) +
                SRCMBR(SGUTILS) OBJTYPE(*MODULE)
-             CRTSRVPGM SRVPGM(PSIMGEN/SGUTILS) EXPORT(*ALL)
-             CRTSQLRPGI OBJ(PSIMGEN/SGINVOKE) SRCFILE(PSIMGEN/SIMGENSRC) +
+             CRTSRVPGM SRVPGM(&DSTLIB/SGUTILS) EXPORT(*ALL)
+             CRTSQLRPGI OBJ(&DSTLIB/SGINVOKE) SRCFILE(&SRCLIB/&SRCFILE) +
                SRCMBR(SGINVOKE) OBJTYPE(*MODULE)
-             CRTPGM PGM(PSIMGEN/SGINVOKE) BNDSRVPGM((SGUTILS))
-             CRTCMD CMD(PSIMGEN/SIMGEN) PGM(PSIMGEN/SGMAIN) +
-               SRCFILE(PSIMGEN/SIMGENSRC) SRCMBR(SIMGEN)
+             CRTPGM PGM(&DSTLIB/SGINVOKE) BNDSRVPGM((SGUTILS))
+             CRTCMD CMD(&DSTLIB/SIMGEN) PGM(&DSTLIB/SGMAIN) +
+               SRCFILE(&SRCLIB/&SRCFILE) SRCMBR(SIMGEN)
+
+           /**************************************************************/
+             SUBR       SUBR(FMT_INPUT)
+               CHGVAR   VAR(&SRCLIB) VALUE(&I_SRCLIB)
+               MONMSG   MSGID(CPF0000) EXEC( +
+                CHGVAR   VAR(&SRCLIB) VALUE('PSIMGEN'))
+
+               CHGVAR   VAR(&SRCFILE) VALUE(&I_SRCFILE)
+               MONMSG   MSGID(CPF0000) EXEC( +
+                CHGVAR   VAR(&SRCFILE) VALUE('SIMGENSRC'))
+
+               CHGVAR   VAR(&DSTLIB) VALUE(&I_DSTLIB)
+               MONMSG   MSGID(CPF0000) EXEC( +
+                 CHGVAR   VAR(&DSTLIB) VALUE(&SRCLIB))
+
+               ADDLIBLE LIB(&DSTLIB)
+               MONMSG   MSGID(CPF2103) /* already exists in LIBL */
+             ENDSUBR
+           /**************************************************************/
+
              ENDPGM
