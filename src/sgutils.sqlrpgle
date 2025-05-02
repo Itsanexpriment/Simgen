@@ -539,6 +539,8 @@ dcl-proc ZonedToBytes;
     return Bytes;
   elseif dots = 1;
     val = PadTrailingZeroes(Rec.VALUE:Rec.PRECISION);
+  else;
+    val = Rec.VALUE;
   endif;
 
   // byte representation of integer values and
@@ -588,6 +590,8 @@ dcl-proc PackedToBytes;
     return Bytes;
   elseif dots = 1;
     val = PadTrailingZeroes(Rec.VALUE:Rec.PRECISION);
+  else;
+    val = Rec.VALUE;
   endif;
 
   // byte representation of integer values and
