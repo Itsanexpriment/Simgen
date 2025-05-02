@@ -21,19 +21,22 @@
 
              PGM        PARM(&I_SRCLIB &I_SRCFILE &I_DSTLIB)
 
+             /* defaults to PSIMGEN */
              DCL     VAR(&I_SRCLIB)  TYPE(*CHAR) LEN(10)
+             /* defaults to SIMGENSRC */
              DCL     VAR(&I_SRCFILE) TYPE(*CHAR) LEN(10)
+             /* defaults to source library */
              DCL     VAR(&I_DSTLIB)  TYPE(*CHAR) LEN(10)
 
-             /* defaults to PSIMGEN */
              DCL     VAR(&SRCLIB)  TYPE(*CHAR) LEN(10)
-             /* defaults to SIMGENSRC */
              DCL     VAR(&SRCFILE) TYPE(*CHAR) LEN(10)
-             /* defaults to source library */
              DCL     VAR(&DSTLIB)  TYPE(*CHAR) LEN(10)
 
-             /* fill input params with dft values if they were not passed */
-             CALLSUBR SUBR(FMT_INPUT)
+             /* init input params with dft values if they were not passed */
+             CALLSUBR SUBR(ENSURE_DFT)
+
+             ADDLIBLE LIB(&DSTLIB)
+             MONMSG   MSGID(CPF2103) /* already exists in LIBL */
 
              CRTPF   FILE(&DSTLIB/F_SIMGEN) SRCFILE(&SRCLIB/&SRCFILE) +
                SRCMBR(F_SIMGEN)
@@ -55,22 +58,24 @@
                SRCFILE(&SRCLIB/&SRCFILE) SRCMBR(SIMGEN)
 
            /**************************************************************/
-             SUBR       SUBR(FMT_INPUT)
+             SUBR       SUBR(ENSURE_DFT)
                CHGVAR   VAR(&SRCLIB) VALUE(&I_SRCLIB)
-               MONMSG   MSGID(CPF0000) EXEC( +
-                CHGVAR   VAR(&SRCLIB) VALUE('PSIMGEN'))
+               MONMSG   MSGID(CPF0000) EXEC(DO)
+                 IF      COND(&SRCLIB = ' ') THEN( +
+                   CHGVAR   VAR(&SRCLIB) VALUE('PSIMGEN'))
+               ENDDO
 
                CHGVAR   VAR(&SRCFILE) VALUE(&I_SRCFILE)
-               MONMSG   MSGID(CPF0000) EXEC( +
-                CHGVAR   VAR(&SRCFILE) VALUE('SIMGENSRC'))
+               MONMSG   MSGID(CPF0000) EXEC(DO)
+                 IF      COND(&SRCFILE = ' ') THEN( +
+                   CHGVAR   VAR(&SRCFILE) VALUE('SIMGENSRC'))
+               ENDDO
 
                CHGVAR   VAR(&DSTLIB) VALUE(&I_DSTLIB)
-               MONMSG   MSGID(CPF0000) EXEC( +
-                 CHGVAR   VAR(&DSTLIB) VALUE(&SRCLIB))
-
-               ADDLIBLE LIB(&DSTLIB)
-               MONMSG   MSGID(CPF2103) /* already exists in LIBL */
+               MONMSG   MSGID(CPF0000) EXEC(DO)
+                 IF      COND(&DSTLIB = ' ') THEN( +
+                   CHGVAR   VAR(&DSTLIB) VALUE(&SRCLIB))
+               ENDDO
              ENDSUBR
            /**************************************************************/
-
              ENDPGM
