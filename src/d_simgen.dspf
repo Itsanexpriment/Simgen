@@ -404,7 +404,10 @@
      A N84                             25  2'F3=Exit   F2=Save Values   F6=Call-
      A                                       Program   F10=Init numeric'
      A                                      COLOR(BLU)
-     A  84                             25  2'F3=Exit   F8=Restore Values'
+     A N81 84                          25  2'F3=Exit   F8=Restore Values'
+     A                                      COLOR(BLU)
+     A  81 84                          25  2'F3=Exit   F8=Restore Values   F12=-
+     A                                      Cancel'
      A                                      COLOR(BLU)
      A          R ARRSFL                    SFL
      A            DSARRIDX       4Y 0O  6  5EDTCDE(Z)
@@ -766,15 +769,15 @@
      A                                      WINDOW(3 17 20 92)
      A  73        WDWERRMSG     30A  O 18  5DSPATR(RI)
      A                                      COLOR(RED)
-     A                                 19  5'F2=Save Values   F12=Cancel'
+     A N84                             19  5'F2=Save Values   F12=Cancel'
+     A                                      COLOR(BLU)
+     A  84                             19  5'F12=Cancel'
      A                                      COLOR(BLU)
      A          R MSGBOX
      A                                      OVERLAY
-     A  70        DSERRMSG      30   O 23 16DSPATR(RI)
+     A  70        DSERRMSG      30A  O 23 16DSPATR(RI)
      A                                      COLOR(RED)
-     A  84                             23 16'Viewing post call parameters, Pres-
-     A                                      s F8 to restore original values'
-     A                                      DSPATR(RI)
+     A  80        DSINFMSG      65A  O 23 16DSPATR(RI)
      A          R ELEMWDW
      A                                      WINDOW(5 46 10 30)
      A                                  2  5'Choose element to view'
