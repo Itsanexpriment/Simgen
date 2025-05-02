@@ -14,36 +14,43 @@ Utility for IBM i (AS/400) that allows calling programs with a gui (DSPF).
 4) in command line, enter command SIMGEN and press prompt(F4)
 
 ## Installation:
-* for easy installation, it's recommended to put all source files
-  in a library called PSIMGEN and source file SIMGENSRC(rcdlen 112)
-* add source files in src folder to PSIMGEN/SIMGENSRC
-* compile CL member SGINTALL into lib PSIMGEN and run it
-* to install manually, run commands in order:
-  ```
-  CRTPF   FILE(MYLIB/F_SIMGEN) SRCFILE(MYLIB/MYSRCPF) SRCMBR(F_SIMGEN)
-  CRTDSPF FILE(MYLIB/D_SIMGEN) SRCFILE(MYLIB/MYSRCPF) SRCMBR(D_SIMGEN)
-  CRTSQLRPGI OBJ(MYLIB/SGMAIN) SRCFILE(MYLIB/MYSRCPF) SRCMBR(SGMAIN) OBJTYPE(*PGM)
-  CRTSQLRPGI OBJ(MYLIB/SGPARSE) SRCFILE(MYLIB/MYSRCPF) SRCMBR(SGPARSE) OBJTYPE(*PGM)
-  CRTSQLRPGI OBJ(MYLIB/SGSCREEN) SRCFILE(MYLIB/MYSRCPF) SRCMBR(SGSCREEN) OBJTYPE(*PGM)
-  CRTSQLRPGI OBJ(MYLIB/SGUTILS) SRCFILE(MYLIB/MYSRCPF) SRCMBR(SGUTILS) OBJTYPE(*MODULE)
-  CRTSRVPGM SRVPGM(MYLIB/SGUTILS) EXPORT(*ALL)
-  CRTSQLRPGI OBJ(MYLIB/SGINVOKE) SRCFILE(MYLIB/MYSRCPF) SRCMBR(SGINVOKE) OBJTYPE(*MODULE)
-  CRTPGM PGM(MYLIB/SGINVOKE) BNDSRVPGM((SGUTILS))
-  CRTCMD CMD(PSIMGEN/SIMGEN) PGM(PSIMGEN/SGMAIN) SRCFILE(PSIMGEN/SIMGENSRC) SRCMBR(SIMGEN)
-  ```
-## How it works:
-   the main program (SGMAIN) accepts two parameters, pgm_info (name + lib) and pcml_file_path.
-   Atleast one of them has to be passed, but its optional to use both. 
-   If pgm_info was passed, the called program will be based on this arg.
-   If pcml_file_path was passed, the called program parameters will be based on this arg.
+1) add source files in src folder to your preferred lib/srcfile (with the same member name)
+2) compile CLLE member SGINTALL
+3) SGINTALL accepts three (optional) params:<br>
+  a) srclib  - lib of SIMGEN source file,  defaults to PSIMGEN<br>
+  b) srcfile - srcfile of SIMGEN members, defaults to SIMGENSRC<br>
+  c) dstlib  - destination of compiled objects, defaults to srclib<br>
 
-   If both are passed, the pgm_info arg overrides the pgm info that's in the pcml when determining what program to call.<br>
-   The pcml_file_path arg takes precedence over the pcml that's embedded in the module of the passed pgm_info. In this case,
-   it's not necessary to embed the pcml in the module.
+for <b>quick installation</b>, create a lib called PSIMGEN and source file SIMGENSRC with rcdlen 112.<br>
+place the source members in SIMGENSRC, compile and run SGINSTALL without any params (CALL PSIMGEN/SGINSTALL).
+
+to install manually, run commands in order:
+  <details>
+    <summary> Click to expand </summary>
+    
+    ```
+    CRTPF   FILE(MYLIB/F_SIMGEN) SRCFILE(MYLIB/MYSRCPF) SRCMBR(F_SIMGEN)
+    CRTDSPF FILE(MYLIB/D_SIMGEN) SRCFILE(MYLIB/MYSRCPF) SRCMBR(D_SIMGEN)
+    CRTSQLRPGI OBJ(MYLIB/SGMAIN) SRCFILE(MYLIB/MYSRCPF) SRCMBR(SGMAIN) OBJTYPE(*PGM)
+    CRTSQLRPGI OBJ(MYLIB/SGPARSE) SRCFILE(MYLIB/MYSRCPF) SRCMBR(SGPARSE) OBJTYPE(*PGM)
+    CRTSQLRPGI OBJ(MYLIB/SGSCREEN) SRCFILE(MYLIB/MYSRCPF) SRCMBR(SGSCREEN) OBJTYPE(*PGM)
+    CRTSQLRPGI OBJ(MYLIB/SGUTILS) SRCFILE(MYLIB/MYSRCPF) SRCMBR(SGUTILS) OBJTYPE(*MODULE)
+    CRTSRVPGM SRVPGM(MYLIB/SGUTILS) EXPORT(*ALL)
+    CRTSQLRPGI OBJ(MYLIB/SGINVOKE) SRCFILE(MYLIB/MYSRCPF) SRCMBR(SGINVOKE) OBJTYPE(*MODULE)
+    CRTPGM PGM(MYLIB/SGINVOKE) BNDSRVPGM((SGUTILS))
+    CRTCMD CMD(MYLIB/SIMGEN) PGM(MYLIB/SGMAIN) SRCFILE(MYLIB/MYSRCPF) SRCMBR(SIMGEN)
+    ```
+  </details>
+ 
+## How it works:
+   The main program (SGMAIN) accepts two parameters, pgm_info(name + lib) and pcml_file_path.<br>
+   Atleast one of them has to be passed, but its optional to use both.<br> 
+   If pgm_info was passed, the program that will be called is be based on this arg.<br>
+   If pcml_file_path was passed, the called program parameters will be based on this arg.<br>
   
-   if pcml file path wasn't provided, the pcml info is extracted from the module
-   of the pgm_info arg.<br> You can embed the pcml info in the module during compilation
-   by using the above mentioned ctl-opt, or by compiling with the PGMINFO parameter in CRTBNDxxx/CRTxxxMOD cmd.
+   Passing both params allows flexibility when trying to call programs that you can't embed the pgminfo in the module.<br>
+   It also enables calling wrapper programs that don't have the definition of all the parameters<br> 
+   (i.e. wrapper CLLE program which accepts a char(1000) that's its DS structure is defined in the inner RPGLE)
 
 ## WIP:
 * add support for service programs (currently only programs are supported)
