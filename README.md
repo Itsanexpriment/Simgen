@@ -3,9 +3,9 @@
 Utility for IBM i (AS/400) that allows calling programs with a gui (DSPF).
 
 ## Features:
-* view and modify program parameters and pass values via green screen
-* view the state of passed parameters after the call to the desired program
-* easy to use, only one line needs to be added to source code of called program
+* View and modify program parameters and pass values via green screen
+* View the state of passed parameters after the call to the desired program
+* Easy to use, only one line needs to be added to source code of the called program
 
 ## How to use:
 1) add control option to the called program ``` ctl-opt pgminfo(*pcml:*module) ```
