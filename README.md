@@ -11,7 +11,7 @@ Utility for IBM i (AS/400) that allows calling programs with a gui (DSPF).
 1) add control option to the called program ``` ctl-opt pgminfo(*pcml:*module) ```
 2) compile the called program
 3) add the utility library to the Library List
-4) in command line, enter command SIMGEN and press prompt(F4)
+4) in command line, enter command SIMGEN and press F4 (prompt)
 
 ## Installation:
 1) add source files in src folder to your preferred lib/srcfile (with the same member name)
