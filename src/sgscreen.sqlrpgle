@@ -61,6 +61,8 @@ dcl-ds Dspf qualified;
   inputErr ind pos(72);
   showArrWdwErr ind pos(73);
   errOverlay ind dim(10) samepos(showErr);
+  // show info msg
+  showInfMsg ind pos(80);
   // view mode
   nestedView ind pos(81);
   arrayView  ind pos(82);
@@ -184,7 +186,8 @@ dow not Dspf.exit;
   WriteScreen();
 
   exfmt MAINCTRL;
-  ClearDspfErrors();
+  ClearDspfMsgBox();
+
 
   // first we check for keys that don't
   // require reading user input(and validating it)
@@ -244,12 +247,13 @@ dcl-proc InitNumericRecursive;
     declare c3 cursor for
     with a1 as
      (
-       select SMID, PARENTID, ARRID
+       select SMID, PARENTID, ARRID, TYPE
        from QTEMP/F_#SIMGEN
        start with PARENTID = :Ctx.parentId
        connect by prior SMID = PARENTID
      )
-    select SMID, ARRID from a1;
+    select SMID, ARRID from a1
+    where TYPE in (:TYP_PACKED, :TYP_ZONED, :TYP_INT);
 
   exec sql close c3;
   exec sql open c3;
@@ -264,7 +268,7 @@ dcl-proc InitNumericRecursive;
     exec sql
       merge into QTEMP/F_#TMPVAL as target
       using (values(:wrk_id, '0', :wrk_arrId)) as source (SMID, VALUE, ARRID)
-      on target.SMID = source.SMID
+        on target.SMID = source.SMID
       when matched and target.VALUE = ' ' then
         update set target.VALUE = source.VALUE
       when not matched then
@@ -289,8 +293,15 @@ dcl-proc PerformCall;
 
   // prompts user to select if they wish to view changed variables (post call)
   Dspf.changedVarView = PromptUpdatedVariables();
-  // we should refresh the main sfl to load the update variables
-  g_refreshMain = Dspf.changedVarView;
+
+  // refresh main sfl to load the update variables, if necessary
+  if Dspf.changedVarView;
+    DSINFMSG = '  Viewing post call values, Press F8 to restore original values  ';
+
+    Dspf.showInfMsg = True;
+    g_refreshMain = True;
+  endif;
+
 end-proc;
 
 // return True if user wishes to view updated vars, else False
@@ -476,11 +487,14 @@ dcl-proc ValidateDec;
   return errMsg;
 end-proc;
 
-dcl-proc ClearDspfErrors;
+dcl-proc ClearDspfMsgBox;
   clear ErrCtx;
 
   clear Dspf.errOverlay;
-  DSERRMSG = *blanks;
+  clear Dspf.showInfMsg;
+
+  clear DSINFMSG;
+  clear DSERRMSG;
 end-proc;
 
 dcl-proc RefreshMainSfl;
@@ -511,7 +525,7 @@ dcl-proc CacheArrValues;
       merge into QTEMP/F_#TMPVAL as target
       using (values(:DSPRMID, :ArrCtx.arrId, :val)) as source (SMID, ARRID, VALUE)
       on target.SMID = source.SMID
-      when matched then
+      when matched and target.VALUE <> source.VALUE then
         update set target.VALUE = source.VALUE
       when not matched then
         insert (SMID, ARRID, VALUE) values(source.SMID, source.ARRID, source.VALUE);
@@ -532,12 +546,17 @@ dcl-proc CacheValues;
 
   for i = 1 to Ctx.count;
     chain i MAINSFL;
+
+    if PRMDLEN = 0;
+      iter;
+    endif;
+
     val = getSflValue(values:PRMDLEN);
     exec sql
       merge into QTEMP/F_#TMPVAL as target
       using (values(:PRMID, :val, :PRMARRID)) as source (SMID, VALUE, ARRID)
       on target.SMID = source.SMID
-      when matched then
+      when matched and target.VALUE <> source.VALUE then
         update set target.VALUE = source.VALUE
       when not matched then
         insert (SMID, VALUE, ARRID) values(source.SMID, source.VALUE, source.ARRID);
@@ -736,7 +755,7 @@ dcl-proc ShowArrayWindow;
     RefreshArrSfl(refreshArr);
     write ARRWDW;
     exfmt ARRCTRL;
-    ClearDspfErrors();
+    ClearDspfMsgBox();
 
     // doesn't require validation
     select keyPressed;
@@ -765,7 +784,7 @@ dcl-proc ShowArrayWindow;
   return *blanks;
   on-exit;
     // cleanup
-    ClearDspfErrors();
+    ClearDspfMsgBox();
     Dspf.arrayView = *off;
     if arrId <> 0;
       ClearCache('ARRID':%char(arrId));
