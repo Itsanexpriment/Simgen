@@ -50,7 +50,7 @@ to install manually, run commands in order:
   
    Passing both params allows flexibility when trying to call programs that you can't embed the pgminfo in the module.<br>
    It also enables calling wrapper programs that don't have the definition of all the parameters<br> 
-   (i.e. wrapper CLLE program which accepts a char(1000) that's its DS structure is defined in the inner RPGLE)
+   (e.g. wrapper CLLE program which accepts a char(1000) that's its DS structure is defined in the inner RPGLE)
 
 ## WIP:
 * add support for service programs (currently only programs are supported)
