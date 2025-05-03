@@ -44,13 +44,13 @@ to install manually, run commands in order:
  
 ## How it works:
    The main program (SGMAIN) accepts two parameters, pgm_info(name + lib) and pcml_file_path.<br>
-   Atleast one of them has to be passed, but its optional to use both.<br> 
-   If pgm_info was passed, the program that will be called is be based on this arg.<br>
-   If pcml_file_path was passed, the called program parameters will be based on this arg.<br>
+   pcml_file_path is optional.<br> 
+   If only pgm_info was passed, both the program that will be called and its params definition will be based on this arg.<br>
+   If pcml_file_path was passed, the program parameters definition will be based on this arg.<br>
   
-   Passing both params allows flexibility when trying to call programs that you can't embed the pgminfo in the module.<br>
+   Passing both params allows flexibility when trying to call programs that don't have the pgminfo embedded in the module.<br>
    It also enables calling wrapper programs that don't have the definition of all the parameters<br> 
-   (e.g. wrapper CLLE program which accepts a char(1000) that's its DS structure is defined in the inner RPGLE)
+   (e.g. calling a wrapper CLLE program which accepts a char(1000) whose DS structure is defined in the inner RPGLE)
 
 ## WIP:
 * add support for service programs (currently only programs are supported)
