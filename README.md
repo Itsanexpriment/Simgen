@@ -8,7 +8,8 @@ Utility for IBM i (AS/400) that allows calling programs with a gui (DSPF).
 * Easy to use, only one line needs to be added to source code of the called program
 
 ## How to use:
-1) add control option to the called RPGLE pgm ``` ctl-opt pgminfo(*pcml:*module) ```
+1) add control option to the called pgm: <br>
+    RPG: ``` ctl-opt pgminfo(*pcml:*module) ``` COBOL: ``` PROCESS PGMINFO(PCML MODULE) ```
 2) compile the called program
 3) add the utility library to the Library List
 4) in command line, enter command SIMGEN and press F4 (prompt)
