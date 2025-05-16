@@ -49,8 +49,7 @@ end-pr;
 dcl-ds VarRec_t extname('F_SIMGEN') qualified template;
 end-ds;
 
-dcl-c MAX_TOP_LVL_PRMS const(999);
-dcl-ds ParmsList_t qualified; // dim(MAX_TOP_LVL_PRMS)
+dcl-ds ParmsList_t qualified;
   type char(10);
   byteSize zoned(5);
 end-ds;
@@ -64,6 +63,8 @@ dcl-ds QualObj_t qualified template;
   name char(10);
   lib  char(10);
 end-ds;
+
+dcl-c MAX_TOP_LVL_PRMS const(999);
 
 dcl-s errMsg_t char(50);
 dcl-s nBytes_t zoned(5);
