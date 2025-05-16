@@ -119,7 +119,8 @@ dcl-ds CurrPrm extname('F_SIMGEN') qualified;
 end-ds;
 
 dcl-ds g_Parents qualified;
-  val char(15) dim(15);
+  val char(15) dim(MAX_NESTED_DS);
+  arrPos zoned(4) dim(MAX_NESTED_DS);
   cnt zoned(2);
 end-ds;
 
@@ -359,6 +360,7 @@ dcl-proc LoadParent;
   endif;
 
   g_Parents.val(g_Parents.cnt) = *blanks;
+  g_Parents.arrPos(g_Parents.cnt) = 0;
   g_Parents.cnt -= 1;
 
   // ClearCache('PARENTID':%char(Ctx.parentId));
@@ -680,6 +682,7 @@ dcl-proc ShowSubFields;
 
   g_Parents.cnt += 1;
   g_Parents.val(g_Parents.cnt) = VARNAME;
+  g_Parents.arrPos(g_Parents.cnt) = elemIdx;
 
   reset Ctx;
   Ctx.parentId = newParentId;
@@ -1233,12 +1236,22 @@ dcl-proc FormatParentsName;
     Parents likeds(g_Parents) const;
   end-pi;
 
+  dcl-s pieces char(21) dim(MAX_NESTED_DS);
+  dcl-s i zoned(3);
+
   if Parents.cnt = 0;
     return *blanks;
   endif;
 
+  for i = 1 to Parents.cnt;
+    pieces(i) = %trim(Parents.val(i)) +
+                '(' +
+                %char(Parents.arrPos(i)) +
+                ')';
+  endfor;
+
   return
-    %concatarr('.':%trimr(%subarr(Parents.val:1:Parents.cnt)));
+    %concatarr('.':%trimr(%subarr(pieces:1:Parents.cnt)));
 end-proc;
 
 dcl-proc GetCachedValue;
