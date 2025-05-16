@@ -508,11 +508,10 @@ dcl-proc ParseParamter;
 
   clear ParamRec;
 
-  // TODO! - add validity check
-
   ParamRec.SIMPNAME = Param.name;
   ParamRec.TYPE = %upper(Param.type);
   ParamRec.ARRDIM = Param.count;
+  ParamRec.PRECISION = Param.precision;
 
   // gen array id
   if Param.count > 0;
