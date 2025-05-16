@@ -154,7 +154,7 @@ dcl-proc utl_Deserialize export;
     endif;
 
     if sqlcode <> 0;
-      errMsg = 'sql error occurred, sqlcode: ' + %char(sqlcode);
+      errMsg = 'Sql error occurred, sqlcode: ' + %char(sqlcode);
       leave;
     endif;
 
@@ -270,7 +270,7 @@ end-proc;
 dcl-proc ZonedToChar;
   dcl-pi *n likeds(ParseResult_t);
     Rec likeds(SimGenRec) const;
-    Src likeds(FlatParm_t) const;
+    FlatParm likeds(FlatParm_t) const;
     startPos zoned(5) const;
   end-pi;
 
@@ -280,36 +280,40 @@ dcl-proc ZonedToChar;
   end-ds;
 
   dcl-s dummy like(inner);
-  dcl-s validNumeric ind;
+  dcl-s rawVal char(63);
+  dcl-s validZoned ind;
 
   clear Result;
 
   Result.size = utl_SizeInBytes(Rec.TYPE:Rec.LENGTH);
-  if (startPos + Result.size) > Src.size;
+  if (startPos + Result.size) > FlatParm.size;
     Result.errMsg = 'variable out of bounds, var id: ' + %char(Rec.SMID);
     return Result;
   endif;
 
   clear inner;
-  %subst(wrapper:%len(wrapper) - Result.size + 1:Result.size) =
-  %subst(Src: startPos + 1: Result.size);
 
-  validNumeric = True;
+  rawVal = %subst(FlatParm: startPos + 1: Result.size);
+  %subst(wrapper:%len(wrapper) - Result.size + 1:Result.size) =
+    %subst(FlatParm: startPos + 1: Result.size);
+
+  validZoned = True;
   monitor;
     dummy = inner;
   on-error;
-    validNumeric = False;
+    validZoned = False;
   endmon;
 
-  if validNumeric;
-    if (inner = 0 or Rec.PRECISION = 0);
-      Result.val = %char(inner);
-    else;
-      Result.val = ToCharWithDecPoint(inner:Rec.PRECISION);
-    endif;
-  else;
-    Result.val = %subst(src: startPos + 1: Result.size);
-  endif;
+  select validZoned;
+    when-is True;
+      if (inner = 0 or Rec.PRECISION = 0); // no need for decimal point
+        Result.val = %char(inner);
+      else;
+        Result.val = ToCharWithDecPoint(rawVal: (inner < 0) :Rec.PRECISION);
+      endif;
+    when-is False;
+      Result.val = %subst(FlatParm: startPos + 1 :Result.size); // return value as-is
+  endsl;
 
   return Result;
 end-proc;
@@ -328,7 +332,8 @@ dcl-proc PackedToChar;
 
   dcl-s dummy like(inner);
   dcl-s val like(ParseResult_t.val);
-  dcl-s validNumeric ind;
+  dcl-s rawVal char(63);
+  dcl-s validPacked ind;
 
   clear Result;
 
@@ -340,21 +345,23 @@ dcl-proc PackedToChar;
   endif;
 
   clear inner;
-  %subst(wrapper:%len(wrapper) - Result.size + 1:Result.size) =
-  %subst(Src: startPos + 1: Result.size);
 
-  validNumeric = True;
+  rawVal = %subst(Src: startPos + 1: Result.size);
+  %subst(wrapper:%len(wrapper) - Result.size + 1:Result.size) =
+    %subst(Src: startPos + 1: Result.size);
+
+  validPacked = True;
   monitor;
     dummy = inner;
   on-error;
-    validNumeric = False;
+    validPacked = False;
   endmon;
 
-  if validNumeric;
+  if validPacked;
     if (Rec.PRECISION = 0 or inner = 0);
       val = %char(inner);
     else;
-      val = ToCharWithDecPoint(inner:Rec.PRECISION);
+      val = ToCharWithDecPoint(rawVal:(inner < 0):Rec.PRECISION);
     endif;
     Result.val = val;
   else;
@@ -410,42 +417,51 @@ end-proc;
 
 dcl-proc ToCharWithDecPoint;
   dcl-pi *n like(ParseResult_t.val);
-    decVal zoned(63) value;
+    decWrapper char(63) value;
+    isNegative ind const;
     precision zoned(2) const;
   end-pi;
 
+  dcl-pr CharToHex extproc('cvthc');
+    *n like(asHex);   // hex out
+    *n like(decWrapper); // char in
+    *n like(hexLen) value;
+  end-pr ;
   dcl-s val varchar(65);
-  dcl-s temp char(63);
 
-  dcl-s isNegative ind;
-  dcl-s i zoned(5);
-  dcl-s c char(1);
+  dcl-s asHex char(126);
+  dcl-s hexLen int(10);
 
   dcl-s len zoned(5);
   dcl-s trailing zoned(3);
 
-  if decVal < 0;
-    isNegative = True;
-    decVal *= -1;
-  endif;
+  CharToHex(asHex:decWrapper:%len(asHex));
+  asHex = %scanrpl('40':'':asHex); // remove blanks
+  asHex = %scanrpl('F':'':asHex);  // remove plus  sign half-byte
+  asHex = %scanrpl('D':'':asHex);  // remove minus sign half-byte
 
-  temp = %editc(decVal:'X');
-
-  if precision = %len(temp);
-    val = '.' + temp;
+  if precision = %len(decWrapper);
+    val = '.' + val;
   else;
-    val = %subst(temp:1:(%len(temp) - precision)) +
+    val = %trim(asHex);
+    val = %subst(val:1:(%len(val) - precision)) +
               '.' +
-              %subst(temp:(%len(temp) - precision) + 1:precision);
+              %subst(val:(%len(val) - precision) + 1:precision);
   endif;
 
-  val = %triml(val:'0');
-  if val = *blanks;
+  // trim leading zeroes (before decPoint) and trailing zeroes (after decPoint)
+  val = %trim(val:'0');
+  if val = *blanks or val = '.';
     val = '0';
   endif;
 
+  // if last char is decPoint (no decimal digits), remove it
+  if %subst(val:%len(val):1) = '.';
+    val = %subst(val:1:%len(val) - 1);
+  endif;
+
+  // add negative sign
   if isNegative;
-    // add negative sign
     val = '-' + val;
   endif;
 
@@ -526,40 +542,20 @@ dcl-proc ZonedToBytes;
   end-ds;
 
   dcl-s val like(SimGenRec.VALUE);
-  dcl-s validNumeric ind;
-  dcl-s dots zoned(5);
 
   clear Bytes;
 
   Bytes.size = utl_SizeInBytes(Rec.TYPE:Rec.LENGTH);
-  dots = countDots(Rec.VALUE);
 
-  if dots > 1; // invalid numeric
+  if not IsValidNumeric(Rec.VALUE);
     Bytes.val = Rec.VALUE;
     return Bytes;
-  elseif dots = 1;
-    val = PadTrailingZeroes(Rec.VALUE:Rec.PRECISION);
-  else;
-    val = Rec.VALUE;
   endif;
 
-  // byte representation of integer values and
-  // decimal values are the same, so we disregard the dot
-  // for easier parsing
-  val = %scanrpl('.':'':val);
+  val = PadTrailingZeroes(Rec.VALUE:Rec.PRECISION);
 
-  validNumeric = True;
-  monitor;
-    inner = %dec(val:63:0);
-  on-error;
-    validNumeric = False;
-  endmon;
-
-  if validNumeric;
-    Bytes.val = %subst(wrapper:(%len(wrapper) - Rec.LENGTH) + 1:Rec.LENGTH);
-  else;
-    Bytes.val = Rec.VALUE;
-  endif;
+  inner = %dec(%scanrpl('.':'':val):63:0);
+  Bytes.val = %subst(wrapper:(%len(wrapper) - Rec.LENGTH) + 1:Rec.LENGTH);
 
   return Bytes;
 end-proc;
@@ -583,34 +579,15 @@ dcl-proc PackedToBytes;
 
   Bytes.size = utl_SizeInBytes(Rec.TYPE:Rec.LENGTH);
 
-  dots = countDots(Rec.VALUE);
-
-  if dots > 1; // invalid numeric
+  if not IsValidNumeric(Rec.VALUE);
     Bytes.val = Rec.VALUE;
     return Bytes;
-  elseif dots = 1;
-    val = PadTrailingZeroes(Rec.VALUE:Rec.PRECISION);
-  else;
-    val = Rec.VALUE;
   endif;
 
-  // byte representation of integer values and
-  // decimal values are the same, so we disregard the dot
-  // for easier parsing
-  val = %scanrpl('.':'':val);
+  val = PadTrailingZeroes(Rec.VALUE:Rec.PRECISION);
 
-  validNumeric = True;
-  monitor;
-    inner = %dec(val:63:0);
-  on-error;
-    validNumeric = False;
-  endmon;
-
-  if validNumeric;
-    Bytes.val = %subst(wrapper:(%len(wrapper) - Bytes.size) + 1:Bytes.size);
-  else;
-    Bytes.val = Rec.VALUE;
-  endif;
+  inner = %dec(%scanrpl('.':'':val):63:0);
+  Bytes.val = %subst(wrapper:(%len(wrapper) - Bytes.size) + 1:Bytes.size);
 
   return Bytes;
 end-proc;
@@ -672,6 +649,31 @@ dcl-proc CharToBytes;
   return Bytes;
 end-proc;
 
+dcl-proc IsValidNumeric;
+  dcl-pi *n ind;
+    maybeNum like(SimGenRec.VALUE) const;
+  end-pi;
+
+  dcl-s dummy zoned(63);
+  dcl-s dots zoned(5);
+
+  dots = countDots(maybeNum);
+  if dots > 1; // invalid numeric
+    return False;
+  endif;
+
+  // byte representation of integer values and decimal values
+  // are the same (e.g. 25 = 2.5), so we disregard the dot
+  // for numeric validation
+  monitor;
+    dummy = %dec(%scanrpl('.':'':maybeNum):63:0);
+  on-error; // invalid numeric
+    return False;
+  endmon;
+
+  return True;
+end-proc;
+
 dcl-proc countDots;
   dcl-pi *n like(count);
     val like(SimGenRec.VALUE) const;
@@ -691,7 +693,7 @@ end-proc;
 
 dcl-proc PadTrailingZeroes;
   dcl-pi *n like(SimGenRec.VALUE);
-    val like(SimGenRec.VALUE) const;
+    val like(SimGenRec.VALUE) const; // must be valid numeric
     precision like(SimGenRec.PRECISION) const;
   end-pi;
 
@@ -707,8 +709,17 @@ dcl-proc PadTrailingZeroes;
     return val; // invalid numeric
   endmon;
 
+  if precision = 0;
+    return val;
+  endif;
+
   wrk_val = %trim(val);
   dotPos = %scan('.' :wrk_val);
+
+  if dotPos = 0;
+    wrk_val += '.' + %subst(allZeros:1:precision);
+    return wrk_val;
+  endif;
 
   afterDot = %len(wrk_val) - dotPos;
 
