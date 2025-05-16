@@ -394,7 +394,7 @@
      A                                      COLOR(BLU)
      A                                  2  2'Viewing:'
      A                                      DSPATR(HI)
-     A            DSVIEWMD      40A  O  2 11
+     A            DSVIEWMD      60A  O  2 11
      A          R FUNCK
      A                                      OVERLAY
      A                                 24  2'-----------------------------------
