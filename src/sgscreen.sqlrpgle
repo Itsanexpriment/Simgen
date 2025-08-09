@@ -82,11 +82,11 @@ end-ds;
 
 // holds main sfl page context
 dcl-ds Ctx qualified;
-  pageIdx zoned(5) inz(1);
-  parentId like(CurrPrm.PARENTID) inz(0);
-  count zoned(3) inz(0);
-  isFirstPage ind inz(True);
-  isLastPage  ind inz(True);
+  firstKeyId zoned(5);
+  lastKeyId  zoned(5);
+  parentId like(CurrPrm.PARENTID);
+  count zoned(3);
+  isLastPage ind;
 end-ds;
 
 // holds error context
@@ -181,14 +181,16 @@ if g_errDesc <> *blanks;
   return;
 endif;
 
+// init position to first page
+PositionToNextPage(Ctx);
 g_refreshMain = True;
+
 dow not Dspf.exit;
   RefreshMainSfl();
   WriteScreen();
 
   exfmt MAINCTRL;
   ClearDspfMsgBox();
-
 
   // first we check for keys that don't
   // require reading user input(and validating it)
@@ -225,9 +227,11 @@ dow not Dspf.exit;
     when-is F10;
       InitNumericRecursive();
     when-is PageDown;
-      ChangePageByDelta(+1);
+      PositionToNextPage(Ctx);
+      g_refreshMain = True;
     when-is PageUp;
-      ChangePageByDelta(-1);
+      PositionToPrevPage(Ctx);
+      g_refreshMain = True;
     when-is Enter;
       HandleSelection();
       g_refreshMain = True;
@@ -364,7 +368,7 @@ dcl-proc LoadParent;
   g_Parents.cnt -= 1;
 
   // ClearCache('PARENTID':%char(Ctx.parentId));
-  reset Ctx;
+  clear Ctx;
   Ctx.parentId = newParent;
   g_refreshMain = True;
 end-proc;
@@ -504,7 +508,8 @@ dcl-proc RefreshMainSfl;
     return;
   endif;
 
-  FillMainSfl(Ctx.parentId:Ctx.pageIdx);
+  clear DSSRCHVAR;
+  FillMainSfl(Ctx.parentId:Ctx.firstKeyId:Ctx.lastKeyId);
   g_refreshMain = False;
 end-proc;
 
@@ -583,21 +588,97 @@ dcl-proc ChangeArrPageByDelta;
   FillArrSfl(i_Ctx.arrId:(i_Ctx.pageIdx + delta));
 end-proc;
 
-dcl-proc ChangePageByDelta;
+dcl-proc PositionToNextPage;
   dcl-pi *n;
-    delta zoned(3) const;
+    mut_Ctx likeds(Ctx);
   end-pi;
 
-  if Ctx.isFirstPage and delta < 0;
+  dcl-s firstKey like(Ctx.firstKeyId);
+  dcl-s lastKey  like(Ctx.lastKeyId);
+
+  if mut_Ctx.isLastPage;
     return;
   endif;
 
-  if Ctx.isLastPage and delta > 0;
-    return;
-  endif;
+  exec sql
+    select min(SMID), max(SMID) into :firstKey, :lastKey
+    from (
+      select SMID from QTEMP/F_#SIMGEN
+      where SMID > :mut_Ctx.lastKeyId
+        and PARENTID = :mut_Ctx.parentId
+        and ARRPOS = 1
+      order by SMID asc
+      limit :SFL_PAGE
+    );
 
-  Ctx.pageIdx += delta;
-  g_refreshMain = True;
+  if sqlcode = 0;
+    mut_Ctx.firstKeyId = firstKey;
+    mut_Ctx.lastKeyId = lastKey;
+  endif;
+end-proc;
+
+dcl-proc PositionToPrevPage;
+  dcl-pi *n;
+    mut_Ctx likeds(Ctx);
+  end-pi;
+
+  dcl-s firstKey like(Ctx.firstKeyId);
+  dcl-s lastKey  like(Ctx.lastKeyId);
+
+  exec sql
+    select min(SMID), max(SMID) into :firstKey, :lastKey
+    from (
+      (select SMID from QTEMP/F_#SIMGEN
+      where SMID < :mut_Ctx.firstKeyId
+        and PARENTID = :mut_Ctx.parentId
+        and ARRPOS = 1
+      order by SMID desc
+      limit :SFL_PAGE)
+      UNION ALL
+      (select SMID from QTEMP/F_#SIMGEN
+      where  SMID >= :mut_Ctx.firstKeyId
+        and PARENTID = :mut_Ctx.parentId
+        and ARRPOS = 1
+      order by SMID asc
+      limit :SFL_PAGE)
+      order by SMID asc
+      limit :SFL_PAGE
+    );
+
+  if sqlcode = 0;
+    mut_Ctx.firstKeyId = firstKey;
+    mut_Ctx.lastKeyId = lastKey;
+  endif;
+end-proc;
+
+dcl-proc PositionToVariable;
+  dcl-pi *n;
+    searchArg like(DSSRCHVAR) const;
+    mut_Ctx likeds(Ctx);
+  end-pi;
+
+  dcl-s firstKey like(Ctx.firstKeyId);
+  dcl-s wrk_searchArg char(40);
+
+  // wrk_searchArg = %scanrpl('%':'%%':searchArg);
+  wrk_searchArg = searchArg;
+
+  exec sql
+    select min(SMID) into :firstKey
+    from QTEMP/F_#SIMGEN
+    where SIMPNAME like strip(:wrk_searchArg) || '%';
+
+  select sqlcode;
+    when-is 0;
+      mut_Ctx.firstKeyId = firstKey;
+      mut_Ctx.lastKeyId = firstKey + 1;  // TODO - this is a hack, fix later
+    when-is 100;
+      // TODO! - handle variable not found
+    other;
+      return;  // TODO - handle sql error
+  endsl;
+
+  return;
 end-proc;
 
 dcl-proc HandleSelection;
@@ -607,6 +688,14 @@ dcl-proc HandleSelection;
 
   dcl-s errMsg char(30);
   dcl-s i int(3);
+
+  // TODO - check if search arg exists and user has made a selection in the sfl,
+  // in which case we should display an error
+
+  if DSSRCHVAR <> *blanks;
+    PositionToVariable(DSSRCHVAR:Ctx);
+    return;
+  endif;
 
   for i = 1 to Ctx.count;
     chain i MAINSFL;
@@ -628,8 +717,6 @@ dcl-proc HandleSelection;
     endif;
 
   endfor;
-
-  g_refreshMain = True;
 end-proc;
 
 dcl-proc ShowSubFields;
@@ -684,7 +771,7 @@ dcl-proc ShowSubFields;
   g_Parents.val(g_Parents.cnt) = VARNAME;
   g_Parents.arrPos(g_Parents.cnt) = elemIdx;
 
-  reset Ctx;
+  clear Ctx;
   Ctx.parentId = newParentId;
   g_refreshMain = True;
 
@@ -845,7 +932,7 @@ end-proc;
 dcl-proc FillArrSfl;
   dcl-pi *n;
     arrId like(CurrPrm.ARRID) const;
-    pageIdx like(Ctx.pageIdx) const;
+    pageIdx like(ArrCtx.pageIdx) const;
   end-pi;
 
   dcl-ds CacheResult likeds(cacheResult_t);
@@ -1056,13 +1143,13 @@ end-proc;
 dcl-proc FillMainSfl;
   dcl-pi *n;
     parentId like(CurrPrm.PARENTID) const;
-    pageIdx like(Ctx.pageIdx) const;
+    firstKey like(Ctx.firstKeyId) const;
+    lastKey like(Ctx.lastKeyId) const;
   end-pi;
 
   dcl-ds CacheResult likeds(cacheResult_t);
 
   dcl-s fetched int(3);
-  dcl-s offset zoned(5);
 
   dcl-s val like(CurrPrm.VALUE);
   dcl-s dspLen int(3);
@@ -1076,18 +1163,15 @@ dcl-proc FillMainSfl;
   ClearMainSfl();
 
   Ctx.parentId = parentId;
-  Ctx.pageIdx  = pageIdx;
-
-  Ctx.isFirstPage = (pageIdx = 1);
   Ctx.isLastPage  = True;
 
-  offset = (SFL_PAGE * (Ctx.pageIdx - 1));
   exec sql
     declare c1 cursor for
     select *
     from QTEMP/F_#SIMGEN
-    where PARENTID = :Ctx.parentId and ARRPOS = 1
-    offset :offset rows;
+    where SMID >= :firstKey
+      and  PARENTID = :Ctx.parentId and ARRPOS = 1
+    order by SMID asc;
 
   exec sql close c1;
   exec sql open c1;
@@ -1222,7 +1306,7 @@ dcl-proc TryInit;
       'unable to create QTEMP/F_#TMPVAL, sqlcde:' + %char(sqlcode);
   endif;
 
-  reset Ctx;
+  clear Ctx;
   reset ArrCtx;
 
   clear ErrCtx;
