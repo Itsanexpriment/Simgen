@@ -395,6 +395,8 @@
      A                                  2  2'Viewing:'
      A                                      DSPATR(HI)
      A            DSVIEWMD      60A  O  2 11
+     A                                  2 75'Position to:'
+     A            DSSRCHVAR     15   B  2 88
      A          R FUNCK
      A                                      OVERLAY
      A                                 24  2'-----------------------------------
