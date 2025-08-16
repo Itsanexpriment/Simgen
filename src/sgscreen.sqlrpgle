@@ -92,6 +92,7 @@ end-ds;
 // holds error context
 dcl-ds ErrCtx qualified;
   rcdNum zoned(2);
+  generalErr ind;
   selectionErr ind;
   inputErr ind;
   msg char(30);
@@ -176,8 +177,8 @@ exec sql set option commit = *none;
 
 g_errDesc = TryInit();
 if g_errDesc <> *blanks;
-// TODO! - do something with errDesc
-  *inlr = *on;
+  Cleanup();
+  snd-msg *info 'error in SGSCREEN:' + %trim(g_errDesc);
   return;
 endif;
 
@@ -238,7 +239,7 @@ dow not Dspf.exit;
   endsl;
 enddo;
 
-*inlr = *on;
+Cleanup();
 
 ////////////////////////
 //   Sub-Procedures   //
@@ -509,7 +510,7 @@ dcl-proc RefreshMainSfl;
   endif;
 
   clear DSSRCHVAR;
-  FillMainSfl(Ctx.parentId:Ctx.firstKeyId:Ctx.lastKeyId);
+  FillMainSfl(Ctx.parentId:Ctx.firstKeyId);
   g_refreshMain = False;
 end-proc;
 
@@ -594,26 +595,20 @@ dcl-proc PositionToNextPage;
   end-pi;
 
   dcl-s firstKey like(Ctx.firstKeyId);
-  dcl-s lastKey  like(Ctx.lastKeyId);
 
   if mut_Ctx.isLastPage;
     return;
   endif;
 
   exec sql
-    select min(SMID), max(SMID) into :firstKey, :lastKey
-    from (
-      select SMID from QTEMP/F_#SIMGEN
-      where SMID > :mut_Ctx.lastKeyId
-        and PARENTID = :mut_Ctx.parentId
-        and ARRPOS = 1
-      order by SMID asc
-      limit :SFL_PAGE
-    );
+    select min(SMID) into :firstKey
+    from QTEMP/F_#SIMGEN
+    where SMID > :mut_Ctx.lastKeyId
+      and PARENTID = :mut_Ctx.parentId
+      and ARRPOS = 1;
 
   if sqlcode = 0;
     mut_Ctx.firstKeyId = firstKey;
-    mut_Ctx.lastKeyId = lastKey;
   endif;
 end-proc;
 
@@ -623,10 +618,9 @@ dcl-proc PositionToPrevPage;
   end-pi;
 
   dcl-s firstKey like(Ctx.firstKeyId);
-  dcl-s lastKey  like(Ctx.lastKeyId);
 
   exec sql
-    select min(SMID), max(SMID) into :firstKey, :lastKey
+    select min(SMID) into :firstKey
     from (
       (select SMID from QTEMP/F_#SIMGEN
       where SMID < :mut_Ctx.firstKeyId
@@ -647,38 +641,94 @@ dcl-proc PositionToPrevPage;
 
   if sqlcode = 0;
     mut_Ctx.firstKeyId = firstKey;
-    mut_Ctx.lastKeyId = lastKey;
   endif;
 end-proc;
 
 dcl-proc PositionToVariable;
-  dcl-pi *n;
-    searchArg like(DSSRCHVAR) const;
-    mut_Ctx likeds(Ctx);
+  dcl-pi *n like(errMsg);
+    searchArg like(DSSRCHVAR) value;
+    mut_Ctx likeds(Ctx);  // mutable
   end-pi;
 
+  dcl-s errMsg char(30);
   dcl-s firstKey like(Ctx.firstKeyId);
-  dcl-s wrk_searchArg char(40);
-
+  // dcl-s wrk_searchArg char(40);
   // wrk_searchArg = %scanrpl('%':'%%':searchArg);
-  wrk_searchArg = searchArg;
+
+  if searchArg = *blanks;
+    return *blanks;
+  endif;
+
+  searchArg = %upper(%trim(searchArg));
+
+  if %upper(searchArg) = 'T';
+    PositionToTop(mut_Ctx);
+    return *blanks;
+  endif;
+
+  if %upper(searchArg) = 'B';
+    PositionToBottom(mut_Ctx);
+    return *blanks;
+  endif;
 
   exec sql
-    select min(SMID) into :firstKey
+    select SMID into :firstKey
     from QTEMP/F_#SIMGEN
-    where SIMPNAME like strip(:wrk_searchArg) || '%';
+    where UPPER(SIMPNAME) like rtrim(:searchArg) || '%'
+      and PARENTID = :mut_Ctx.parentId
+      and ARRPOS = 1
+    order by SMID asc
+    fetch first row only;
 
   select sqlcode;
     when-is 0;
       mut_Ctx.firstKeyId = firstKey;
-      mut_Ctx.lastKeyId = firstKey + 1;  // TODO - this is a hack, fix later
     when-is 100;
-      // TODO! - handle variable not found
+      errMsg = '      Variable not found';
     other;
-      return;  // TODO - handle sql error
+      errMsg = '    Sql error: ' + %char(sqlcode);  // TODO - handle sql error
   endsl;
 
-  return;
+  return errMsg;
+end-proc;
+
+dcl-proc PositionToTop;
+  dcl-pi *n;
+    mut_Ctx likeds(Ctx);  // mutable
+  end-pi;
+
+  dcl-s firstKey like(Ctx.firstKeyId);
+
+  exec sql
+    select min(SMID) into :firstKey
+    from QTEMP/F_#SIMGEN
+    where PARENTID = :mut_Ctx.parentId
+    and ARRPOS = 1;
+
+  if sqlcode = 0;
+    mut_Ctx.firstKeyId = firstKey;
+  endif;
+end-proc;
+
+dcl-proc PositionToBottom;
+  dcl-pi *n;
+    mut_Ctx likeds(Ctx);  // mutable
+  end-pi;
+
+  dcl-s maxKey like(Ctx.firstKeyId);
+
+  exec sql
+    select max(SMID) into :maxKey
+    from QTEMP/F_#SIMGEN
+    where PARENTID = :mut_Ctx.parentId
+    and ARRPOS = 1;
+
+  if sqlcode = 0;
+    // set the first key to be greater than the max key
+    mut_Ctx.firstKeyId = maxKey + 1;
+    // then load previous page
+    PositionToPrevPage(mut_Ctx);
+  endif;
 end-proc;
 
 dcl-proc HandleSelection;
@@ -693,7 +743,12 @@ dcl-proc HandleSelection;
   // in which case we should display an error
 
   if DSSRCHVAR <> *blanks;
-    PositionToVariable(DSSRCHVAR:Ctx);
+    errMsg = PositionToVariable(DSSRCHVAR:Ctx);
+    if errMsg <> *blanks;
+      ErrCtx.generalErr = *on;
+      ErrCtx.rcdNum = 0;  // not a sfl record err
+      ErrCtx.msg = errMsg;
+    endif;
     return;
   endif;
 
@@ -1090,8 +1145,6 @@ dcl-proc ClearArrSfl;
 end-proc;
 
 dcl-proc SaveMainSfl;
-  dcl-s val char(MAX_DSP_LEN);
-  dcl-s i int(3);
 
   // exec sql
   //   merge into QTEMP/F_#SIMGEN as target
@@ -1144,7 +1197,6 @@ dcl-proc FillMainSfl;
   dcl-pi *n;
     parentId like(CurrPrm.PARENTID) const;
     firstKey like(Ctx.firstKeyId) const;
-    lastKey like(Ctx.lastKeyId) const;
   end-pi;
 
   dcl-ds CacheResult likeds(cacheResult_t);
@@ -1264,11 +1316,15 @@ dcl-proc FillMainSfl;
 
   if RRN > 0;
     Dspf.dspSfl = *on;
+    Ctx.lastKeyId = PRMID;
   endif;
   Ctx.count = RRN;
 
-  // check if a subfile record contains an error
-  if ErrCtx.rcdNum <> 0;
+  // show errors if needed
+  if ErrCtx.generalErr;
+    Dspf.showErr = *on;
+    DSERRMSG = ErrCtx.msg;
+  elseif ErrCtx.rcdNum <> 0;  // error in sfl record
     chain ErrCtx.rcdNum MAINSFL;
 
     select;
@@ -1284,14 +1340,13 @@ dcl-proc FillMainSfl;
         update MAINSFL;
     endsl;
   endif;
+
 end-proc;
 
 // return err msg if init failed, else blanks
 dcl-proc TryInit;
   dcl-pi *n like(g_errDesc);
   end-pi;
-
-  dcl-s errMsg like(g_errDesc);
 
   exec sql
     create or replace table
@@ -1456,6 +1511,11 @@ dcl-proc ClearMainSfl;
 
   write MAINCTRL;
   Dspf.dspCtl = *on;
+end-proc;
+
+dcl-proc Cleanup;
+  exec sql drop table QTEMP/F_#TMPVAL;
+  *inlr = *on;
 end-proc;
 
 ** sizeToIndsMap
