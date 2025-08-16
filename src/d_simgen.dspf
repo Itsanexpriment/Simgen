@@ -56,322 +56,402 @@
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 52 54  FLDA002        2A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 52 55  FLDA003        3A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 52 56  FLDA004        4A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 52 57  FLDA005        5A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 52 58  FLDA006        6A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 52 59  FLDA007        7A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 52 60  FLDA008        8A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 53 54  FLDA009        9A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 53 55  FLDA010       10A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 53 56  FLDA011       11A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 53 57  FLDA012       12A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 53 58  FLDA013       13A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 53 59  FLDA014       14A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 53 60  FLDA015       15A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 54 55  FLDA016       16A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 54 56  FLDA017       17A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 54 57  FLDA018       18A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 54 58  FLDA019       19A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 54 59  FLDA020       20A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 54 60  FLDA021       21A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 55 56  FLDA022       22A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 55 57  FLDA023       23A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 55 58  FLDA024       24A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 55 59  FLDA025       25A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 55 60  FLDA026       26A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 56 57  FLDA027       27A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 56 58  FLDA028       28A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 56 59  FLDA029       29A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 56 60  FLDA030       30A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 57 58  FLDA031       31A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 57 59  FLDA032       32A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 57 60  FLDA033       33A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 58 59  FLDA034       34A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 58 60  FLDA035       35A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 59 60  FLDA036       36A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 53 54  FLDA037       37A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 53 55  FLDA038       38A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 53 56  FLDA039       39A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 53 57  FLDA040       40A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 53 58  FLDA041       41A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 53 59  FLDA042       42A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 53 60  FLDA043       43A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 54 55  FLDA044       44A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 54 56  FLDA045       45A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 54 57  FLDA046       46A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 54 58  FLDA047       47A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 54 59  FLDA048       48A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 54 60  FLDA049       49A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 55 56  FLDA050       50A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 55 57  FLDA051       51A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 55 58  FLDA052       52A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 55 59  FLDA053       53A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 55 60  FLDA054       54A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 56 57  FLDA055       55A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 56 58  FLDA056       56A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 56 59  FLDA057       57A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 56 60  FLDA058       58A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 57 58  FLDA059       59A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 57 59  FLDA060       60A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 57 60  FLDA061       61A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 58 59  FLDA062       62A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 58 60  FLDA063       63A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 59 60  FLDA064       64A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 54 55  FLDA065       65A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 54 56  FLDA066       66A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 54 57  FLDA067       67A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 54 58  FLDA068       68A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 54 59  FLDA069       69A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 54 60  FLDA070       70A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 55 56  FLDA071       71A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 55 57  FLDA072       72A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 55 58  FLDA073       73A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 55 59  FLDA074       74A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 55 60  FLDA075       75A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 56 57  FLDA076       76A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 56 58  FLDA077       77A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 56 59  FLDA078       78A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 56 60  FLDA079       79A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 57 58  FLDA080       80A  B  7 41
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A          R MAINCTRL                  SFLCTL(MAINSFL)
      A                                      SFLSIZ(0015)
      A                                      SFLPAG(0015)
@@ -395,8 +475,8 @@
      A                                  2  2'Viewing:'
      A                                      DSPATR(HI)
      A            DSVIEWMD      60A  O  2 11
-     A                                  2 75'Position to:'
-     A            DSSRCHVAR     15   B  2 88
+     A                                  4 64'Search:'
+     A            DSSRCHVAR     15   B  4 72CHECK(LC)
      A          R FUNCK
      A                                      OVERLAY
      A                                 24  2'-----------------------------------
@@ -419,322 +499,402 @@
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 52 54  FLDB002        2A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 52 55  FLDB003        3A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 52 56  FLDB004        4A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 52 57  FLDB005        5A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 52 58  FLDB006        6A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 52 59  FLDB007        7A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 52 60  FLDB008        8A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 53 54  FLDB009        9A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 53 55  FLDB010       10A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 53 56  FLDB011       11A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 53 57  FLDB012       12A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 53 58  FLDB013       13A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 53 59  FLDB014       14A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 53 60  FLDB015       15A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 54 55  FLDB016       16A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 54 56  FLDB017       17A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 54 57  FLDB018       18A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 54 58  FLDB019       19A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 54 59  FLDB020       20A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 54 60  FLDB021       21A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 55 56  FLDB022       22A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 55 57  FLDB023       23A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 55 58  FLDB024       24A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 55 59  FLDB025       25A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 55 60  FLDB026       26A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 56 57  FLDB027       27A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 56 58  FLDB028       28A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 56 59  FLDB029       29A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 56 60  FLDB030       30A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 57 58  FLDB031       31A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 57 59  FLDB032       32A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 57 60  FLDB033       33A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 58 59  FLDB034       34A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 58 60  FLDB035       35A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  51 59 60  FLDB036       36A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 53 54  FLDB037       37A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 53 55  FLDB038       38A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 53 56  FLDB039       39A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 53 57  FLDB040       40A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 53 58  FLDB041       41A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 53 59  FLDB042       42A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 53 60  FLDB043       43A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 54 55  FLDB044       44A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 54 56  FLDB045       45A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 54 57  FLDB046       46A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 54 58  FLDB047       47A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 54 59  FLDB048       48A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 54 60  FLDB049       49A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 55 56  FLDB050       50A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 55 57  FLDB051       51A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 55 58  FLDB052       52A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 55 59  FLDB053       53A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 55 60  FLDB054       54A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 56 57  FLDB055       55A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 56 58  FLDB056       56A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 56 59  FLDB057       57A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 56 60  FLDB058       58A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 57 58  FLDB059       59A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 57 59  FLDB060       60A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 57 60  FLDB061       61A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 58 59  FLDB062       62A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 58 60  FLDB063       63A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  52 59 60  FLDB064       64A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 54 55  FLDB065       65A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 54 56  FLDB066       66A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 54 57  FLDB067       67A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 54 58  FLDB068       68A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 54 59  FLDB069       69A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 54 60  FLDB070       70A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 55 56  FLDB071       71A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 55 57  FLDB072       72A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 55 58  FLDB073       73A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 55 59  FLDB074       74A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 55 60  FLDB075       75A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 56 57  FLDB076       76A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 56 58  FLDB077       77A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 56 59  FLDB078       78A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 56 60  FLDB079       79A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A  53 57 58  FLDB080       80A  B  6 12
      A  72                                  DSPATR(RI)
      A  84                                  DSPATR(PR)
      A N84                                  DSPATR(UL)
+     A                                      CHECK(LC)
      A          R ARRCTRL                   SFLCTL(ARRSFL)
      A                                      SFLSIZ(0010)
      A                                      SFLPAG(0010)
