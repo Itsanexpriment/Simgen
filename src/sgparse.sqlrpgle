@@ -154,6 +154,8 @@ endif;
 
 out_resolvedPgm.name = g_Pcml.Program.name;
 out_resolvedPgm.lib = g_Pcml.Program.lib;
+
+exec sql drop table QTEMP/F_#STRCT;
 *inlr = *on;
 
 ////////////////////////
@@ -793,6 +795,8 @@ dcl-proc ExitWithError;
   dcl-pi *n;
     errMsg like(out_errMsg) const;
   end-pi;
+
+  exec sql drop table QTEMP/F_#STRCT;
 
   out_errMsg = %trim(errMsg);
   *inlr = *on;

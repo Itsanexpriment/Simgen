@@ -82,16 +82,17 @@ end-ds;
 
 // holds main sfl page context
 dcl-ds Ctx qualified;
-  pageIdx zoned(5) inz(1);
-  parentId like(CurrPrm.PARENTID) inz(0);
-  count zoned(3) inz(0);
-  isFirstPage ind inz(True);
-  isLastPage  ind inz(True);
+  firstKeyId zoned(5);
+  lastKeyId  zoned(5);
+  parentId like(CurrPrm.PARENTID);
+  count zoned(3);
+  isLastPage ind;
 end-ds;
 
 // holds error context
 dcl-ds ErrCtx qualified;
   rcdNum zoned(2);
+  generalErr ind;
   selectionErr ind;
   inputErr ind;
   msg char(30);
@@ -176,19 +177,21 @@ exec sql set option commit = *none;
 
 g_errDesc = TryInit();
 if g_errDesc <> *blanks;
-// TODO! - do something with errDesc
-  *inlr = *on;
+  Cleanup();
+  snd-msg *info 'error in SGSCREEN:' + %trim(g_errDesc);
   return;
 endif;
 
+// init position to first page
+PositionToNextPage(Ctx);
 g_refreshMain = True;
+
 dow not Dspf.exit;
   RefreshMainSfl();
   WriteScreen();
 
   exfmt MAINCTRL;
   ClearDspfMsgBox();
-
 
   // first we check for keys that don't
   // require reading user input(and validating it)
@@ -225,16 +228,18 @@ dow not Dspf.exit;
     when-is F10;
       InitNumericRecursive();
     when-is PageDown;
-      ChangePageByDelta(+1);
+      PositionToNextPage(Ctx);
+      g_refreshMain = True;
     when-is PageUp;
-      ChangePageByDelta(-1);
+      PositionToPrevPage(Ctx);
+      g_refreshMain = True;
     when-is Enter;
       HandleSelection();
       g_refreshMain = True;
   endsl;
 enddo;
 
-*inlr = *on;
+Cleanup();
 
 ////////////////////////
 //   Sub-Procedures   //
@@ -364,7 +369,7 @@ dcl-proc LoadParent;
   g_Parents.cnt -= 1;
 
   // ClearCache('PARENTID':%char(Ctx.parentId));
-  reset Ctx;
+  clear Ctx;
   Ctx.parentId = newParent;
   g_refreshMain = True;
 end-proc;
@@ -504,7 +509,8 @@ dcl-proc RefreshMainSfl;
     return;
   endif;
 
-  FillMainSfl(Ctx.parentId:Ctx.pageIdx);
+  clear DSSRCHVAR;
+  FillMainSfl(Ctx.parentId:Ctx.firstKeyId);
   g_refreshMain = False;
 end-proc;
 
@@ -583,21 +589,137 @@ dcl-proc ChangeArrPageByDelta;
   FillArrSfl(i_Ctx.arrId:(i_Ctx.pageIdx + delta));
 end-proc;
 
-dcl-proc ChangePageByDelta;
+dcl-proc PositionToNextPage;
   dcl-pi *n;
-    delta zoned(3) const;
+    mut_Ctx likeds(Ctx);
   end-pi;
 
-  if Ctx.isFirstPage and delta < 0;
+  dcl-s firstKey like(Ctx.firstKeyId);
+
+  if mut_Ctx.isLastPage;
     return;
   endif;
 
-  if Ctx.isLastPage and delta > 0;
-    return;
+  exec sql
+    select min(SMID) into :firstKey
+    from QTEMP/F_#SIMGEN
+    where SMID > :mut_Ctx.lastKeyId
+      and PARENTID = :mut_Ctx.parentId
+      and ARRPOS = 1;
+
+  if sqlcode = 0;
+    mut_Ctx.firstKeyId = firstKey;
+  endif;
+end-proc;
+
+dcl-proc PositionToPrevPage;
+  dcl-pi *n;
+    mut_Ctx likeds(Ctx);
+  end-pi;
+
+  dcl-s firstKey like(Ctx.firstKeyId);
+
+  exec sql
+    select min(SMID) into :firstKey
+    from (
+      select SMID from QTEMP/F_#SIMGEN
+      where SMID < :mut_Ctx.firstKeyId
+        and PARENTID = :mut_Ctx.parentId
+        and ARRPOS = 1
+      order by SMID desc
+      limit :SFL_PAGE
+    );
+
+  if sqlcode = 0;
+    mut_Ctx.firstKeyId = firstKey;
+  endif;
+end-proc;
+
+dcl-proc PositionToVariable;
+  dcl-pi *n like(errMsg);
+    searchArg like(DSSRCHVAR) value;
+    mut_Ctx likeds(Ctx);  // mutable
+  end-pi;
+
+  dcl-s errMsg char(30);
+  dcl-s firstKey like(Ctx.firstKeyId);
+  // dcl-s wrk_searchArg char(40);
+  // wrk_searchArg = %scanrpl('%':'%%':searchArg);
+
+  if searchArg = *blanks;
+    return *blanks;
   endif;
 
-  Ctx.pageIdx += delta;
-  g_refreshMain = True;
+  searchArg = %upper(%trim(searchArg));
+
+  if %upper(searchArg) = 'T';
+    PositionToTop(mut_Ctx);
+    return *blanks;
+  endif;
+
+  if %upper(searchArg) = 'B';
+    PositionToBottom(mut_Ctx);
+    return *blanks;
+  endif;
+
+  exec sql
+    select SMID into :firstKey
+    from QTEMP/F_#SIMGEN
+    where UPPER(SIMPNAME) like rtrim(:searchArg) || '%'
+      and PARENTID = :mut_Ctx.parentId
+      and ARRPOS = 1
+    order by SMID asc
+    fetch first row only;
+
+  select sqlcode;
+    when-is 0;
+      mut_Ctx.firstKeyId = firstKey;
+    when-is 100;
+      errMsg = '      Variable not found';
+    other;
+      errMsg = '    Sql error: ' + %char(sqlcode);  // TODO - handle sql error
+  endsl;
+
+  return errMsg;
+end-proc;
+
+dcl-proc PositionToTop;
+  dcl-pi *n;
+    mut_Ctx likeds(Ctx);  // mutable
+  end-pi;
+
+  dcl-s firstKey like(Ctx.firstKeyId);
+
+  exec sql
+    select min(SMID) into :firstKey
+    from QTEMP/F_#SIMGEN
+    where PARENTID = :mut_Ctx.parentId
+    and ARRPOS = 1;
+
+  if sqlcode = 0;
+    mut_Ctx.firstKeyId = firstKey;
+  endif;
+end-proc;
+
+dcl-proc PositionToBottom;
+  dcl-pi *n;
+    mut_Ctx likeds(Ctx);  // mutable
+  end-pi;
+
+  dcl-s maxKey like(Ctx.firstKeyId);
+
+  exec sql
+    select max(SMID) into :maxKey
+    from QTEMP/F_#SIMGEN
+    where PARENTID = :mut_Ctx.parentId
+    and ARRPOS = 1;
+
+  if sqlcode = 0;
+    // set the first key to be greater than the max key
+    mut_Ctx.firstKeyId = maxKey + 1;
+    // then load previous page
+    PositionToPrevPage(mut_Ctx);
+  endif;
 end-proc;
 
 dcl-proc HandleSelection;
@@ -608,12 +730,25 @@ dcl-proc HandleSelection;
   dcl-s errMsg char(30);
   dcl-s i int(3);
 
+  // TODO - check if search arg exists and user has made a selection in the sfl,
+  // in which case we should display an error
+
+  if DSSRCHVAR <> *blanks;
+    errMsg = PositionToVariable(DSSRCHVAR:Ctx);
+    if errMsg <> *blanks;
+      ErrCtx.generalErr = *on;
+      ErrCtx.rcdNum = 0;  // not a sfl record err
+      ErrCtx.msg = errMsg;
+    endif;
+    return;
+  endif;
+
   for i = 1 to Ctx.count;
     chain i MAINSFL;
 
     select OP;
       when-is WORK_WITH_DS;
-        errMsg = ShowSubFields(PRMID:PRMOGTYP);
+        errMsg = ShowSubFields(PRMID:PRMOGTYP:PRMARRDIM);
       when-is WORK_WITH_ARRAY;
         errMsg = ShowArrayWindow(PRMID);
       when-is DISPLAY;
@@ -628,14 +763,13 @@ dcl-proc HandleSelection;
     endif;
 
   endfor;
-
-  g_refreshMain = True;
 end-proc;
 
 dcl-proc ShowSubFields;
   dcl-pi *n like(errMsg);
     id   like(PRMID) const;
     type like(PRMOGTYP) const;
+    arrayDim like(PRMARRDIM) const;
   end-pi;
 
   dcl-s newParentId like(CurrPrm.SMID);
@@ -654,8 +788,8 @@ dcl-proc ShowSubFields;
     return errMsg;
   endif;
 
-  if PRMARRDIM > 0;
-    elemIdx = ShowElementSelectionWindow(PRMARRDIM);
+  if arrayDim > 0;
+    elemIdx = ShowElementSelectionWindow(arrayDim);
 
     if Dspf.cancel;
       return *blanks;
@@ -682,9 +816,14 @@ dcl-proc ShowSubFields;
 
   g_Parents.cnt += 1;
   g_Parents.val(g_Parents.cnt) = VARNAME;
-  g_Parents.arrPos(g_Parents.cnt) = elemIdx;
+  if arrayDim > 0;
+    g_Parents.arrPos(g_Parents.cnt) = elemIdx;  // save the parents index
+  else;
+    g_Parents.arrPos(g_Parents.cnt) = 0;  // parent isn't an array
+  endif;
 
-  reset Ctx;
+
+  clear Ctx;
   Ctx.parentId = newParentId;
   g_refreshMain = True;
 
@@ -845,7 +984,7 @@ end-proc;
 dcl-proc FillArrSfl;
   dcl-pi *n;
     arrId like(CurrPrm.ARRID) const;
-    pageIdx like(Ctx.pageIdx) const;
+    pageIdx like(ArrCtx.pageIdx) const;
   end-pi;
 
   dcl-ds CacheResult likeds(cacheResult_t);
@@ -1003,8 +1142,6 @@ dcl-proc ClearArrSfl;
 end-proc;
 
 dcl-proc SaveMainSfl;
-  dcl-s val char(MAX_DSP_LEN);
-  dcl-s i int(3);
 
   // exec sql
   //   merge into QTEMP/F_#SIMGEN as target
@@ -1056,13 +1193,12 @@ end-proc;
 dcl-proc FillMainSfl;
   dcl-pi *n;
     parentId like(CurrPrm.PARENTID) const;
-    pageIdx like(Ctx.pageIdx) const;
+    firstKey like(Ctx.firstKeyId) const;
   end-pi;
 
   dcl-ds CacheResult likeds(cacheResult_t);
 
   dcl-s fetched int(3);
-  dcl-s offset zoned(5);
 
   dcl-s val like(CurrPrm.VALUE);
   dcl-s dspLen int(3);
@@ -1076,18 +1212,15 @@ dcl-proc FillMainSfl;
   ClearMainSfl();
 
   Ctx.parentId = parentId;
-  Ctx.pageIdx  = pageIdx;
-
-  Ctx.isFirstPage = (pageIdx = 1);
   Ctx.isLastPage  = True;
 
-  offset = (SFL_PAGE * (Ctx.pageIdx - 1));
   exec sql
     declare c1 cursor for
     select *
     from QTEMP/F_#SIMGEN
-    where PARENTID = :Ctx.parentId and ARRPOS = 1
-    offset :offset rows;
+    where SMID >= :firstKey
+      and  PARENTID = :Ctx.parentId and ARRPOS = 1
+    order by SMID asc;
 
   exec sql close c1;
   exec sql open c1;
@@ -1180,11 +1313,15 @@ dcl-proc FillMainSfl;
 
   if RRN > 0;
     Dspf.dspSfl = *on;
+    Ctx.lastKeyId = PRMID;
   endif;
   Ctx.count = RRN;
 
-  // check if a subfile record contains an error
-  if ErrCtx.rcdNum <> 0;
+  // show errors if needed
+  if ErrCtx.generalErr;
+    Dspf.showErr = *on;
+    DSERRMSG = ErrCtx.msg;
+  elseif ErrCtx.rcdNum <> 0;  // error in sfl record
     chain ErrCtx.rcdNum MAINSFL;
 
     select;
@@ -1200,14 +1337,13 @@ dcl-proc FillMainSfl;
         update MAINSFL;
     endsl;
   endif;
+
 end-proc;
 
 // return err msg if init failed, else blanks
 dcl-proc TryInit;
   dcl-pi *n like(g_errDesc);
   end-pi;
-
-  dcl-s errMsg like(g_errDesc);
 
   exec sql
     create or replace table
@@ -1222,7 +1358,7 @@ dcl-proc TryInit;
       'unable to create QTEMP/F_#TMPVAL, sqlcde:' + %char(sqlcode);
   endif;
 
-  reset Ctx;
+  clear Ctx;
   reset ArrCtx;
 
   clear ErrCtx;
@@ -1244,10 +1380,13 @@ dcl-proc FormatParentsName;
   endif;
 
   for i = 1 to Parents.cnt;
-    pieces(i) = %trim(Parents.val(i)) +
-                '(' +
+    pieces(i) = %trim(Parents.val(i));
+    if Parents.arrPos(i) <> 0;
+      // append array index of the parent
+      pieces(i) = %trim(pieces(i)) + '(' +
                 %char(Parents.arrPos(i)) +
                 ')';
+    endif;
   endfor;
 
   return
@@ -1372,6 +1511,11 @@ dcl-proc ClearMainSfl;
 
   write MAINCTRL;
   Dspf.dspCtl = *on;
+end-proc;
+
+dcl-proc Cleanup;
+  exec sql drop table QTEMP/F_#TMPVAL;
+  *inlr = *on;
 end-proc;
 
 ** sizeToIndsMap
