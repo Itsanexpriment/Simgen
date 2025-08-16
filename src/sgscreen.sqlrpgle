@@ -622,20 +622,11 @@ dcl-proc PositionToPrevPage;
   exec sql
     select min(SMID) into :firstKey
     from (
-      (select SMID from QTEMP/F_#SIMGEN
+      select SMID from QTEMP/F_#SIMGEN
       where SMID < :mut_Ctx.firstKeyId
         and PARENTID = :mut_Ctx.parentId
         and ARRPOS = 1
       order by SMID desc
-      limit :SFL_PAGE)
-      UNION ALL
-      (select SMID from QTEMP/F_#SIMGEN
-      where  SMID >= :mut_Ctx.firstKeyId
-        and PARENTID = :mut_Ctx.parentId
-        and ARRPOS = 1
-      order by SMID asc
-      limit :SFL_PAGE)
-      order by SMID asc
       limit :SFL_PAGE
     );
 
