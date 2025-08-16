@@ -748,7 +748,7 @@ dcl-proc HandleSelection;
 
     select OP;
       when-is WORK_WITH_DS;
-        errMsg = ShowSubFields(PRMID:PRMOGTYP);
+        errMsg = ShowSubFields(PRMID:PRMOGTYP:PRMARRDIM);
       when-is WORK_WITH_ARRAY;
         errMsg = ShowArrayWindow(PRMID);
       when-is DISPLAY;
@@ -769,6 +769,7 @@ dcl-proc ShowSubFields;
   dcl-pi *n like(errMsg);
     id   like(PRMID) const;
     type like(PRMOGTYP) const;
+    arrayDim like(PRMARRDIM) const;
   end-pi;
 
   dcl-s newParentId like(CurrPrm.SMID);
@@ -787,8 +788,8 @@ dcl-proc ShowSubFields;
     return errMsg;
   endif;
 
-  if PRMARRDIM > 0;
-    elemIdx = ShowElementSelectionWindow(PRMARRDIM);
+  if arrayDim > 0;
+    elemIdx = ShowElementSelectionWindow(arrayDim);
 
     if Dspf.cancel;
       return *blanks;
@@ -815,7 +816,12 @@ dcl-proc ShowSubFields;
 
   g_Parents.cnt += 1;
   g_Parents.val(g_Parents.cnt) = VARNAME;
-  g_Parents.arrPos(g_Parents.cnt) = elemIdx;
+  if arrayDim > 0;
+    g_Parents.arrPos(g_Parents.cnt) = elemIdx;  // save the parents index
+  else;
+    g_Parents.arrPos(g_Parents.cnt) = 0;  // parent isn't an array
+  endif;
+
 
   clear Ctx;
   Ctx.parentId = newParentId;
@@ -1374,10 +1380,13 @@ dcl-proc FormatParentsName;
   endif;
 
   for i = 1 to Parents.cnt;
-    pieces(i) = %trim(Parents.val(i)) +
-                '(' +
+    pieces(i) = %trim(Parents.val(i));
+    if Parents.arrPos(i) <> 0;
+      // append array index of the parent
+      pieces(i) = %trim(pieces(i)) + '(' +
                 %char(Parents.arrPos(i)) +
                 ')';
+    endif;
   endfor;
 
   return
