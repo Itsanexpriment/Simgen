@@ -723,8 +723,7 @@ dcl-proc PositionToBottom;
 end-proc;
 
 dcl-proc HandleSelection;
-  dcl-c WORK_WITH_DS const('1');
-  dcl-c WORK_WITH_ARRAY const('2');
+  dcl-c WORK_WITH const('1');
   dcl-c DISPLAY const('5');
 
   dcl-s errMsg char(30);
@@ -747,12 +746,14 @@ dcl-proc HandleSelection;
     chain i MAINSFL;
 
     select OP;
-      when-is WORK_WITH_DS;
-        errMsg = ShowSubFields(PRMID:PRMOGTYP:PRMARRDIM);
-      when-is WORK_WITH_ARRAY;
-        errMsg = ShowArrayWindow(PRMID);
-      when-is DISPLAY;
-      // TODO - impl
+      when-is WORK_WITH;
+        if %upper(PRMOGTYP) = TYP_STRUCT;
+          errMsg = ShowSubFields(PRMID:PRMOGTYP:PRMARRDIM);
+        elseif PRMARRDIM > 0;
+          errMsg = ShowArrayWindow(PRMID);
+        else;
+          errMsg = '  Variable isn''t DS or Array  ';
+        endif;
     endsl;
 
     if errMsg <> *blanks;
@@ -843,11 +844,12 @@ dcl-proc ShowElementSelectionWindow;
   SLCMAXELM = maxElems;
   dow not Dspf.cancel;
     exfmt ELEMWDW;
+
     if keyPressed = Enter;
-      if SLCTELEM > maxElems;
+      if SLCTELEM <= 0 or SLCTELEM > maxElems;
         SLCTELEM = 0;
       else;
-        leave;
+        leave;  // valid selection
       endif;
     endif;
   enddo;

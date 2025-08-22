@@ -468,15 +468,13 @@
      A                                  5 41'Value'
      A                                  4 34'Array'
      A                                  5 34'Dim'
-     A                                  3  2'1=Work with subfields(DS)'
-     A                                      COLOR(BLU)
-     A                                  3 29'2=Work with elements(Array)'
+     A                                  3  2'1=Work With'
      A                                      COLOR(BLU)
      A                                  2  2'Viewing:'
      A                                      DSPATR(HI)
      A            DSVIEWMD      60A  O  2 11
-     A                                  4 64'Search:'
-     A            DSSRCHVAR     15   B  4 72CHECK(LC)
+     A                                  3 50'Search:'
+     A            DSSRCHVAR     15A  B  3 58CHECK(LC)
      A          R FUNCK
      A                                      OVERLAY
      A                                 24  2'-----------------------------------
