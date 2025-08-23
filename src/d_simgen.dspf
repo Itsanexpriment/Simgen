@@ -24,7 +24,9 @@
      A N84                                  CF02(02 'SAVE')
      A                                      CA03(03 'EXIT')
      A N84                                  CF06(06 'EXEC')
-     A  84                                  CA08(08 'RESTORE')
+     A N84                                  CF07(07 'IMPORT')
+     A N84                                  CF08(08 'EXPORT')
+     A  84                                  CA09(09 'RESTORE')
      A N84                                  CA10(10 'INIT NUM')
      A  81
      AO 82
@@ -479,16 +481,20 @@
      A                                      OVERLAY
      A                                 24 10'-----------------------------------
      A                                      ------------------------------------
-     A                                      ----------'
+     A                                      -----------'
      A                                      COLOR(BLU)
      A N84                             25 10'F3=Exit   F2=Save Values   F6=Call-
-     A                                       Program   F10=Init numeric'
+     A                                       Program   F7=Import Values   F8=Ex-
+     A                                      port Values'
      A                                      COLOR(BLU)
-     A N81 84                          25 10'F3=Exit   F8=Restore Values'
+     A N84                             26 10'F10=Init Numeric'
      A                                      COLOR(BLU)
-     A  81 84                          25 10'F3=Exit   F8=Restore Values   F12=-
+     A N81 84                          25 10'F3=Exit   F9=Restore Values'
+     A                                      COLOR(BLU)
+     A  81 84                          25 10'F3=Exit   F9=Restore Values   F12=-
      A                                      Cancel'
      A                                      COLOR(BLU)
+     A                                 25 91' '
      A          R ARRSFL                    SFL
      A            DSARRIDX       4Y 0O  6  5EDTCDE(Z)
      A            DSPRMID        5S 0H
@@ -946,6 +952,17 @@
      A            SLCMAXELM      4Y 0O  4 17
      A                                  9  3'Enter=Confirm   F12=Cancel'
      A                                      COLOR(BLU)
+     A          R OBJSLCTWDW
+     A                                      WINDOW(5 46 10 30)
+     A            DSOBJHDR      24A  O  2  5
+     A            DSFILENAM     10A  B  4 12
+     A            DSFILELIB     10A  B  5 12
+     A                                  9  3'Enter=Confirm   F12=Cancel'
+     A                                      COLOR(BLU)
+     A                                  5  6'Lib :'
+     A                                  4  6'File:'
+     A  74        DSFILEERR     20   O  7  6DSPATR(RI)
+     A                                      COLOR(RED)
      A          R CHGWDW
      A                                      OVERLAY
      A                                      WINDOW(5 46 8 40)
