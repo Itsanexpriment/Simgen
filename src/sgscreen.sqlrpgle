@@ -60,6 +60,7 @@ dcl-ds Dspf qualified;
   selectionErr ind pos(71);
   inputErr ind pos(72);
   showArrWdwErr ind pos(73);
+  fileSelectionErr ind pos(74);
   errOverlay ind dim(10) samepos(showErr);
   // show info msg
   showInfMsg ind pos(80);
@@ -143,11 +144,17 @@ dcl-c DIGITS const('0123456789');
 dcl-c MAX_DSP_LEN const(80);
 dcl-c MAX_NESTED_DS const(15);
 
+// file selection modes
+dcl-c WDW_MODE_IMPORT const(1);
+dcl-c WDW_MODE_EXPORT const(2);
+
 // key constants
 dcl-c F2 const(x'32');
 dcl-c F3 const(x'33');
 dcl-c F6 const(x'36');
+dcl-c F7 const(x'37');
 dcl-c F8 const(x'38');
+dcl-c F9 const(x'39');
 dcl-c F10 const(x'3A');
 dcl-c F12 const(x'3C');
 dcl-c Enter const(x'F1');
@@ -198,7 +205,7 @@ dow not Dspf.exit;
   select keyPressed;
     when-is F3;
       leave;
-    when-is F8;
+    when-is F9;
       Dspf.changedVarView = False;
       g_refreshMain = True;
       iter;
@@ -225,6 +232,10 @@ dow not Dspf.exit;
       SaveMainSfl();
     when-is F6;
       PerformCall();
+    when-is F7;
+      ImportValues();
+    when-is F8;
+      ExportValues();
     when-is F10;
       InitNumericRecursive();
     when-is PageDown;
@@ -244,6 +255,228 @@ Cleanup();
 ////////////////////////
 //   Sub-Procedures   //
 ////////////////////////
+
+dcl-proc ImportValues;
+  dcl-ds SelectedFile likeds(qualObj_t);
+  dcl-s errMsg like(ErrCtx.msg);
+
+  SelectedFile = ShowFileSelection(WDW_MODE_IMPORT);
+
+  if SelectedFile.name <> *blanks;
+    errMsg = FetchValuesFromFile(SelectedFile);
+
+    if errMsg <> *blanks;
+      ErrCtx.generalErr = True;
+      ErrCtx.msg = %trim(errMsg);
+    endif;
+    g_refreshMain = True;
+  endif;
+end-proc;
+
+dcl-proc ExportValues;
+  dcl-ds ExportFile likeds(qualObj_t);
+  dcl-s errMsg like(ErrCtx.msg);
+
+  ExportFile = ShowFileSelection(WDW_MODE_EXPORT);
+
+  if ExportFile.lib <> *blanks and ExportFile.name <> *blanks;
+    errMsg = WriteValuesToFile(ExportFile);
+
+    if errMsg <> *blanks;
+      ErrCtx.generalErr = True;
+      ErrCtx.msg = %trim(errMsg);
+    endif;
+    g_refreshMain = True;
+  endif;
+end-proc;
+
+dcl-proc ShowFileSelection;
+  dcl-pi *n likeds(SelectedFile);
+    selectionMode zoned(1) const;
+  end-pi;
+
+  dcl-ds SelectedFile likeds(qualObj_t);
+  dcl-s exists ind;
+  // setup
+  Dspf.promptView = True;
+  Dspf.fileSelectionErr = False;
+  clear OBJSLCTWDW;
+  DSFILELIB = '*LIBL';
+
+  select selectionMode;
+    when-is WDW_MODE_IMPORT;
+      DSOBJHDR = 'Import values from file';
+    when-is WDW_MODE_EXPORT;
+      DSOBJHDR = 'Export values to file';
+    other;
+      return *blanks;  // unreachable
+  endsl;
+
+  dow not Dspf.cancel;
+    exfmt OBJSLCTWDW;
+    clear DSFILEERR;
+    Dspf.fileSelectionErr = False;
+
+    if keyPressed = Enter;
+      DSFILEERR = ValidateFileInput(DSFILELIB:DSFILENAM:selectionMode);
+
+      if DSFILEERR <> *blanks;
+        Dspf.fileSelectionErr = True;
+      else;
+        SelectedFile.lib = %upper(%trim(DSFILELIB));
+        SelectedFile.name = %upper(%trim(DSFILENAM));
+        leave;  // valid
+      endif;
+    endif;
+
+  enddo;
+
+  return SelectedFile;
+end-proc;
+
+dcl-proc ValidateFileInput;
+  dcl-pi *n like(errMsg);
+    fileLib  char(10) const;
+    fileName char(10) const;
+    selectionMode zoned(1) const;
+  end-pi;
+
+  // error msgs
+  dcl-c FILE_NOT_FOUND const('   File not found   ');
+  dcl-c FILE_EXISTS    const('File already exists ');
+  dcl-c LIB_INVALID    const('   Invalid library  ');
+  dcl-c LIB_NOT_FOUND    const(' Library not found ');
+
+  dcl-s errMsg like(DSFILEERR);
+  dcl-s exists ind;
+
+  select selectionMode;
+    when-is WDW_MODE_IMPORT;
+      exists = FileExists(fileLib:fileName);
+      if not exists;
+        return FILE_NOT_FOUND;  // error
+      endif;
+    when-is WDW_MODE_EXPORT;
+      if fileLib = *blanks or %subst(%trim(fileLib):1:1) = '*';
+        return LIB_INVALID;  // error
+      endif;
+
+      exists = LibraryExists(fileLib);
+      if not exists;
+        return LIB_NOT_FOUND;  // error
+      endif;
+
+      exists = FileExists(fileLib:fileName);
+      if exists;
+        return FILE_EXISTS;  // error
+      endif;
+  endsl;
+
+  return *blanks;  // ok
+end-proc;
+
+dcl-proc LibraryExists;
+  dcl-pi *n ind;
+    library  char(10) const;
+  end-pi;
+
+  dcl-s cmd varchar(250);
+
+  cmd = 'CHKOBJ OBJ(' + %trim(library) + ') OBJTYPE(*LIB)';
+  return ExecCmd(cmd);
+end-proc;
+
+dcl-proc FileExists;
+  dcl-pi *n ind;
+    fileLib  char(10) const;
+    fileName char(10) const;
+  end-pi;
+
+  dcl-s cmd varchar(250);
+  dcl-s qualifiedName varchar(21);
+
+  if fileLib <> *blanks and fileLib <> '*LIBL';
+    qualifiedName = %upper(%trim(fileLib)) + '/';
+  endif;
+  qualifiedName += %upper(%trim(fileName));
+
+  cmd = 'CHKOBJ OBJ(' + qualifiedName + ') OBJTYPE(*FILE)';
+  return ExecCmd(cmd);
+end-proc;
+
+dcl-proc FetchValuesFromFile;
+  dcl-pi *n like(errMsg);
+    ImportFile likeds(qualObj_t) value;
+  end-pi;
+
+  dcl-s errMsg like(ErrCtx.msg);
+  dcl-s sqlStmt varchar(512);
+  dcl-s qualifiedName varchar(21);
+
+  ImportFile = %upper(ImportFile);
+
+  if ImportFile.lib <> *blanks and ImportFile.lib <> '*LIBL';
+    qualifiedName = %trim(ImportFile.lib) + '/';
+  endif;
+  qualifiedName += %trim(ImportFile.name);
+
+  sqlStmt =
+   'merge into QTEMP/F_#TMPVAL as target ' +
+   'using ' + qualifiedName +' as source ' +
+   'on target.SMID = source.SMID ' +
+   'when matched and target.VALUE <> source.VALUE then ' +
+   '  update set target.VALUE = source.VALUE ' +
+   'when not matched then ' +
+   '  insert (SMID, VALUE, ARRID) values(source.SMID, source.VALUE, source.ARRID)';
+
+  exec sql execute immediate :sqlStmt;
+
+  select sqlcode;
+    when-is 0;  // ok
+    when-is -205;
+      errMsg = '    Invalid file structure    ';
+    other;
+      errMsg = '      Error, sqlcode:' + %char(sqlcode);
+  endsl;
+
+  return errMsg;
+end-proc;
+
+dcl-proc WriteValuesToFile;
+  dcl-pi *n like(errMsg);
+    ExportFile likeds(qualObj_t) value;
+  end-pi;
+
+  dcl-s errMsg like(ErrCtx.msg);
+  dcl-s sqlStmt varchar(512);
+  dcl-s qualifiedName varchar(21);
+
+  ExportFile = %upper(ExportFile);
+  qualifiedName = %trim(ExportFile.lib) + '/' + %trim(ExportFile.name);
+
+  SaveMainSfl();
+
+  // create table with same structure as QTEMP/F_#TMPVAL
+  sqlStmt = 'create table ' + qualifiedName +
+            ' as (select * from QTEMP/F_#TMPVAL) ' +
+            'with no data';
+  exec sql execute immediate :sqlStmt;
+  if sqlcode <= 0;
+    return 'Error, sqlcode:' + %char(sqlcode);
+  endif;
+
+  // insert values into newly created table
+  sqlStmt = 'insert into ' + qualifiedName +
+            ' (SMID, ARRID, VALUE) ' +
+            'select SMID, ARRID, VALUE from QTEMP/F_#SIMGEN ' +
+            'where VALUE <> '' ''';
+  exec sql execute immediate :sqlStmt;
+  if sqlcode <> 0;
+    return 'Error, sqlcode:' + %char(sqlcode);
+  endif;
+
+  return *blanks;  // ok
+end-proc;
 
 dcl-proc InitNumericRecursive;
   dcl-s wrk_id like(CurrPrm.SMID);
@@ -293,7 +526,7 @@ dcl-proc PerformCall;
   callp InvokePgm(in_Pgm:err);
 
   if err <> *blanks;
-  // TODO! - do something with err
+  // TODO - do something with err
     return;
   endif;
 
@@ -302,7 +535,7 @@ dcl-proc PerformCall;
 
   // refresh main sfl to load the update variables, if necessary
   if Dspf.changedVarView;
-    DSINFMSG = '  Viewing post call values, Press F8 to restore original values  ';
+    DSINFMSG = '  Viewing post call values, Press F9 to restore original values  ';
 
     Dspf.showInfMsg = True;
     g_refreshMain = True;
@@ -723,8 +956,7 @@ dcl-proc PositionToBottom;
 end-proc;
 
 dcl-proc HandleSelection;
-  dcl-c WORK_WITH_DS const('1');
-  dcl-c WORK_WITH_ARRAY const('2');
+  dcl-c WORK_WITH const('1');
   dcl-c DISPLAY const('5');
 
   dcl-s errMsg char(30);
@@ -747,12 +979,14 @@ dcl-proc HandleSelection;
     chain i MAINSFL;
 
     select OP;
-      when-is WORK_WITH_DS;
-        errMsg = ShowSubFields(PRMID:PRMOGTYP:PRMARRDIM);
-      when-is WORK_WITH_ARRAY;
-        errMsg = ShowArrayWindow(PRMID);
-      when-is DISPLAY;
-      // TODO - impl
+      when-is WORK_WITH;
+        if %upper(PRMOGTYP) = TYP_STRUCT;
+          errMsg = ShowSubFields(PRMID:PRMOGTYP:PRMARRDIM);
+        elseif PRMARRDIM > 0;
+          errMsg = ShowArrayWindow(PRMID);
+        else;
+          errMsg = '  Variable isn''t DS or Array  ';
+        endif;
     endsl;
 
     if errMsg <> *blanks;
@@ -843,11 +1077,12 @@ dcl-proc ShowElementSelectionWindow;
   SLCMAXELM = maxElems;
   dow not Dspf.cancel;
     exfmt ELEMWDW;
+
     if keyPressed = Enter;
-      if SLCTELEM > maxElems;
+      if SLCTELEM <= 0 or SLCTELEM > maxElems;
         SLCTELEM = 0;
       else;
-        leave;
+        leave;  // valid selection
       endif;
     endif;
   enddo;
@@ -972,13 +1207,13 @@ dcl-proc ClearCache;
     colValue varchar(10) const;
   end-pi;
 
-  dcl-s sqlQuery varchar(250);
+  dcl-s sqlStmt varchar(250);
 
-  sqlQuery  = 'delete from QTEMP/F_#TMPVAL where ';
-  sqlQuery += colName + '=';
-  sqlQuery += colValue;
+  sqlStmt  = 'delete from QTEMP/F_#TMPVAL where ';
+  sqlStmt += colName + '=';
+  sqlStmt += colValue;
 
-  exec sql execute immediate :sqlQuery;
+  exec sql execute immediate :sqlStmt;
 end-proc;
 
 dcl-proc FillArrSfl;
@@ -1492,6 +1727,30 @@ dcl-proc IsSignedNumeric;
   endsl;
 
   return False;
+end-proc;
+
+dcl-proc ExecCmd;
+  dcl-pi *n ind;
+    wrk_cmd varchar(500) const;
+  end-pi;
+
+  dcl-pr QCMDEXC extpgm('QCMDEXC');
+    *n like(cmd) options(*varsize) const;
+    *n like(cmdLen) const;
+  end-pr;
+
+  dcl-s cmd char(500);
+  dcl-s cmdLen packed(15:5);
+
+  cmd = wrk_cmd;
+  cmdLen = %len(wrk_cmd);
+  monitor;
+    callp QCMDEXC(cmd:cmdLen);
+  on-error;
+    return False;
+  endmon;
+
+  return True;
 end-proc;
 
 dcl-proc WriteScreen;
