@@ -257,13 +257,13 @@ Cleanup();
 ////////////////////////
 
 dcl-proc ImportValues;
-  dcl-ds ImportFile likeds(qualObj_t);
+  dcl-ds SelectedFile likeds(qualObj_t);
   dcl-s errMsg like(ErrCtx.msg);
 
-  ImportFile = ShowFileSelection(WDW_MODE_IMPORT);
+  SelectedFile = ShowFileSelection(WDW_MODE_IMPORT);
 
-  if ImportFile.name <> *blanks;
-    errMsg = FetchValuesFromFile(ImportFile);
+  if SelectedFile.name <> *blanks;
+    errMsg = FetchValuesFromFile(SelectedFile);
 
     if errMsg <> *blanks;
       ErrCtx.generalErr = True;
@@ -291,11 +291,11 @@ dcl-proc ExportValues;
 end-proc;
 
 dcl-proc ShowFileSelection;
-  dcl-pi *n likeds(ImportFile);
+  dcl-pi *n likeds(SelectedFile);
     selectionMode zoned(1) const;
   end-pi;
 
-  dcl-ds ImportFile likeds(qualObj_t);
+  dcl-ds SelectedFile likeds(qualObj_t);
   dcl-s exists ind;
   // setup
   Dspf.promptView = True;
@@ -323,15 +323,15 @@ dcl-proc ShowFileSelection;
       if DSFILEERR <> *blanks;
         Dspf.fileSelectionErr = True;
       else;
-        ImportFile.lib = %upper(%trim(DSFILELIB));
-        ImportFile.name = %upper(%trim(DSFILENAM));
+        SelectedFile.lib = %upper(%trim(DSFILELIB));
+        SelectedFile.name = %upper(%trim(DSFILENAM));
         leave;  // valid
       endif;
     endif;
 
   enddo;
 
-  return ImportFile;
+  return SelectedFile;
 end-proc;
 
 dcl-proc ValidateFileInput;
@@ -344,7 +344,8 @@ dcl-proc ValidateFileInput;
   // error msgs
   dcl-c FILE_NOT_FOUND const('   File not found   ');
   dcl-c FILE_EXISTS    const('File already exists ');
-  dcl-c INVALID_LIB    const('   Invalid library  ');
+  dcl-c LIB_INVALID    const('   Invalid library  ');
+  dcl-c LIB_NOT_FOUND    const(' Library not found ');
 
   dcl-s errMsg like(DSFILEERR);
   dcl-s exists ind;
@@ -352,24 +353,37 @@ dcl-proc ValidateFileInput;
   select selectionMode;
     when-is WDW_MODE_IMPORT;
       exists = FileExists(fileLib:fileName);
-      if exists;
-        return *blanks;  // selected valid file
-      else;
+      if not exists;
         return FILE_NOT_FOUND;  // error
       endif;
     when-is WDW_MODE_EXPORT;
       if fileLib = *blanks or %subst(%trim(fileLib):1:1) = '*';
-        return INVALID_LIB;  // error
+        return LIB_INVALID;  // error
+      endif;
+
+      exists = LibraryExists(fileLib);
+      if not exists;
+        return LIB_NOT_FOUND;  // error
       endif;
 
       exists = FileExists(fileLib:fileName);
       if exists;
         return FILE_EXISTS;  // error
-      else;
-        return *blanks;  // selected valid file
       endif;
   endsl;
 
+  return *blanks;  // ok
+end-proc;
+
+dcl-proc LibraryExists;
+  dcl-pi *n ind;
+    library  char(10) const;
+  end-pi;
+
+  dcl-s cmd varchar(250);
+
+  cmd = 'CHKOBJ OBJ(' + %trim(library) + ') OBJTYPE(*LIB)';
+  return ExecCmd(cmd);
 end-proc;
 
 dcl-proc FileExists;
@@ -387,7 +401,6 @@ dcl-proc FileExists;
   qualifiedName += %upper(%trim(fileName));
 
   cmd = 'CHKOBJ OBJ(' + qualifiedName + ') OBJTYPE(*FILE)';
-
   return ExecCmd(cmd);
 end-proc;
 
@@ -417,9 +430,14 @@ dcl-proc FetchValuesFromFile;
    '  insert (SMID, VALUE, ARRID) values(source.SMID, source.VALUE, source.ARRID)';
 
   exec sql execute immediate :sqlStmt;
-  if sqlcode <> 0;
-    errMsg = 'Error, sqlcode:' + %char(sqlcode);
-  endif;
+
+  select sqlcode;
+    when-is 0;  // ok
+    when-is -205;
+      errMsg = '    Invalid file structure    ';
+    other;
+      errMsg = '      Error, sqlcode:' + %char(sqlcode);
+  endsl;
 
   return errMsg;
 end-proc;
@@ -457,7 +475,7 @@ dcl-proc WriteValuesToFile;
     return 'Error, sqlcode:' + %char(sqlcode);
   endif;
 
-  return *blanks;
+  return *blanks;  // ok
 end-proc;
 
 dcl-proc InitNumericRecursive;
