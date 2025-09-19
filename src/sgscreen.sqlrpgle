@@ -21,7 +21,7 @@
 // THE SOFTWARE.
 
 
-ctl-opt dftactgrp(*no);
+ctl-opt dftactgrp(*no) actgrp(*caller);
 
 ////////////////////////
 //     Prototypes     //

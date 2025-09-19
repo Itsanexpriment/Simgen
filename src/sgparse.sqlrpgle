@@ -20,7 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-ctl-opt dftactgrp(*no);
+
+ctl-opt dftactgrp(*no) actgrp(*caller);
 
 ////////////////////////
 //     Prototypes     //
