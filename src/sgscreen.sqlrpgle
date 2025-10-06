@@ -461,7 +461,7 @@ dcl-proc WriteValuesToFile;
             ' as (select * from QTEMP/F_#TMPVAL) ' +
             'with no data';
   exec sql execute immediate :sqlStmt;
-  if sqlcode <= 0;
+  if sqlcode <> 0;
     return 'Error, sqlcode:' + %char(sqlcode);
   endif;
 
